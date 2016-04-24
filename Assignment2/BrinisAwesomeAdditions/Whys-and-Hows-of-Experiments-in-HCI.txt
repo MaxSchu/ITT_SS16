@@ -1,0 +1,42 @@
+• What does Hornbæk say about the relationship between self-reported and objectively measured task performance? (p. 35-36)
+
+Hornbaek and Law found out that users' perception of outcomes differed from actual measured outcomes. (p. 35) The reason for this phenomenon is that “experience is subjective and emerges 
+through various contextual factors, for instance, objects, people, the relationship to exterior” (p. 36). Once an impression is created it remains in the user's head. A very 
+important sentence mentioned in this section summarizes this statement: "it may be not matter how a product is objectively, its quality must also be experienced to have impact". (p. 38 f.)
+Here the importance of the user experience is implied. The UX has a great impact on the subjective impression – so often the subjective impression differs from the objective. 
+So it’s important to measure task performance objectively, not only subjectively. 
+
+• Describe advantages and limitations of research hypotheses. (p. 14-16)
+First of all, hypotheses “help gain clarity about what one is doing” (p. 14). By formulating hypotheses the researcher may be more focused to a specific research question. 
+Secondly, in order to formulate hypotheses the researcher has to consider what earlier work says about the experiment being design. So hypotheses generally help “summarize earlier work 
+and use that work in motivating and designing the experiment”. (p. 14)
+Additionally, hypotheses help report an experiment. For the reader of the experiment’s report hypotheses provide structure and make it conform to the usual way of reporting experiments.
+Besides, hypotheses could be presented as reason or „driving-force“ for the conduction of an experiment. (p. 14 f.)
+The fourth advantage given in the text is the fact that hypotheses are “tied to theory”. (p. 15) It’s mentioned that the experimenter should always be able to answer the question 
+“what theory does your data disconfirm?”. This means the hypotheses should be well-wrought and have an underlying theory. (p. 15)
+
+As limitation the strong reliance on theory is mentioned. Because of this reliance the researchers could be blinded to interesting findings and even “are more likely to revise experiments
+if findings disconfirming evidence rather than to revise theory”. (p. 16) 
+Moreover, the null hypothesis is often formulated only to be disconfirmed, although an experiment failing to reject the null hypothesis could be valuable, too. (p. 15)
+
+• Is it acceptable to conduct user studies with media informatics students as participants instead of a broad sample of potential users? (p. 26-27)
+Campbell says that "the specific work experiences of the subjects influence the phenomena being studied in such a way that they confound the results of the study". (p. 26) In every 
+experiment the confounding of results should be prevented and so, in case of media informatics students, the participants offer expertise that non-media informatics students or in general 
+the general public normally don't have, for instance, technical, programming and usability knowledge. According to Campbell’s statement it could be assumed that the user study results of 
+media informatics students would be confound. This is partly correct depending on the domain or topic of the user study's test object. In general it’s not recommendable to conduct user 
+studies only with media informatics students. But if the (e.g.) software that has got a specific (limited) target group and requires certain knowledge that non-media informatics students 
+wouldn’t have and therefore would be unable to cope with, it’s acceptable to conduct the study with them.
+
+What are advantages and limitations?
+
+An advantage of using media informatics students could be that they know common usability-problems/problem areas (e.g. missing feedback) – therefore they are used to pay attention to 
+specific details and so they may find more problems in these areas. 
+Furthermore they know the procedure of a usability-test including think aloud and so it's easier for them to take part at such a test because they are used to it. Due to their expertise 
+they could be more confident in dealing with software - so they offer more criticism. 
+
+
+In contrast, a limitation could be seen that due to their knowledge media informatics could detect problems that don’t bother other non-media informatics participants. 
+Name one topic for a user study where it would be problematic to have only media informatics students as participants. Name one counter-example.
+An example of a topic for a user study where it would be problematic to have only media informatics students as participants would be a software designed for a special target group: 
+for instance, a software in the context of a car dealer, in detail, a CRM-software solution for car salesmen.
+A counter-example would be a software that specifically targets media informatics students, for example a development environment software or a usability testing tool. 
