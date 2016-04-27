@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import csv
+import os
 
 
 class FileReader():
@@ -59,8 +61,36 @@ class FileReader():
         return orderList
 
 
+class CSVWriter():
+    """docstring for CSVWriter"""
+
+    def __init__(self, participantId, values):
+        super(CSVWriter, self).__init__()
+        print("in writer")
+        self.createCSV(participantId, values)
+
+    def createCSV(self, participantId, values):
+        self.csvFileName = (os.path.dirname(__file__) + '/Test_Result'
+            + str(participantId) + '.csv')
+
+        with open(self.csvFileName, 'a', newline='') as csvFile:
+            fieldNames = list(values.keys())
+            csvWriter = csv.DictWriter(csvFile, fieldnames = fieldNames)
+            csvWriter.writeheader()
+
+    def writeCSV(self, values):
+        with open(self.csvFileName, 'a', newline='') as csvFile:
+            fieldNames = list(values.keys())
+            csvWriter = csv.DictWriter(csvFile, fieldnames = fieldNames)
+            csvWriter.writerow(values)
+
+
 def main():
-    FileReader()
+    reader = FileReader()
+    values = reader.readFile()
+    writer = CSVWriter(1 , values)
+    writer.writeCSV(values)
+    writer.writeCSV(values)
 
 if __name__ == '__main__':
     main()
