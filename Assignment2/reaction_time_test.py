@@ -71,24 +71,24 @@ class CSVWriter():
 
     def createCSV(self, participantId, values):
         self.csvFileName = (os.path.dirname(__file__) + '/Test_Result'
-            + str(participantId) + '.csv')
+                            + str(participantId) + '.csv')
 
         with open(self.csvFileName, 'a', newline='') as csvFile:
             fieldNames = list(values.keys())
-            csvWriter = csv.DictWriter(csvFile, fieldnames = fieldNames)
+            csvWriter = csv.DictWriter(csvFile, fieldnames=fieldNames)
             csvWriter.writeheader()
 
     def writeCSV(self, values):
         with open(self.csvFileName, 'a', newline='') as csvFile:
             fieldNames = list(values.keys())
-            csvWriter = csv.DictWriter(csvFile, fieldnames = fieldNames)
+            csvWriter = csv.DictWriter(csvFile, fieldnames=fieldNames)
             csvWriter.writerow(values)
 
 
 def main():
     reader = FileReader()
     values = reader.readFile()
-    writer = CSVWriter(1 , values)
+    writer = CSVWriter(1, values)
     writer.writeCSV(values)
     writer.writeCSV(values)
 
