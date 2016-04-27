@@ -49,7 +49,7 @@ class ClickRecorder():
 
     def checkKey(self, dictionary, key):
         if (key in dictionary.keys()):
-            if (dictionary[key] == None or dictionary[key] == ""):
+            if (dictionary[key] is None or dictionary[key] == ""):
                 print("no value for " + key)
                 exit()
         else:
