@@ -5,7 +5,7 @@ import sys
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-class ClickRecorder(QtWidgets.QWidget):
+class ClickRecorder():
 
     participant_key = "PARTICIPANT"
     repetition_key = "REPETITIONS"
@@ -13,10 +13,11 @@ class ClickRecorder(QtWidgets.QWidget):
     order_key = "ORDER"
 
     def __init__(self):
-        super(ClickRecorder, self).__init__()
-        self.readFile(self)
-        self.counter = 0
-        self.initUI()
+        print("in init" + sys.argv[1])
+        print(self)
+        self.readFile()
+        #self.counter = 0
+        #self.initUI()
 
     def readFile(self):
         parameters = {}
@@ -34,7 +35,10 @@ class ClickRecorder(QtWidgets.QWidget):
                         print("Invalid value in " + key)
                         exit()
                 parameters[key] = value
-        self.checkDictionary(self, parameters)
+        self.checkDictionary(parameters)
+        parameters[self.order_key] = self.splitOrderString(parameters[self.order_key])
+        for key in parameters:
+            print(key + ": " + str(parameters[key]))
         return parameters
 
     def checkDictionary(self, dictionary):
@@ -43,15 +47,20 @@ class ClickRecorder(QtWidgets.QWidget):
         self.checkKey(dictionary, self.time_between_key)
         self.checkKey(dictionary, self.order_key)
 
-    def checkKey(dictionary, key):
+    def checkKey(self, dictionary, key):
         if (key in dictionary.keys()):
-            if (len(dictionary[key]) == 0):
+            if (dictionary[key] == None or dictionary[key] == ""):
                 print("no value for " + key)
                 exit()
         else:
             print(key + " not found")
             exit()
 
+    def splitOrderString(self, value):
+        orderList = value.split(" ")
+        if(len(orderList) != 4):
+            print("Invalid order parameters")
+        return orderList
 
     def initUI(self):
         # set the text property of the widget we are inheriting
@@ -92,9 +101,6 @@ class ClickRecorder(QtWidgets.QWidget):
 
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
-    sys.exit(app.exec_())
-
-
+    ClickRecorder()
 if __name__ == '__main__':
     main()
