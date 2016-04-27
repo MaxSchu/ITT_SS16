@@ -56,10 +56,11 @@ class ClickRecorder():
             print(key + " not found")
             exit()
 
-    def splitOrderString(self, value):
-        orderList = value.split(" ")
+    def splitOrderString(self, values):
+        orderList = list(map(int, values.split(" ")))
         if(len(orderList) != 4):
             print("Invalid order parameters")
+            exit()
         return orderList
 
     def initUI(self):
