@@ -17,7 +17,7 @@ class ClickRecorder():
         print(self)
         self.readFile()
         #self.counter = 0
-        #self.initUI()
+        # self.initUI()
 
     def readFile(self):
         parameters = {}
@@ -36,7 +36,8 @@ class ClickRecorder():
                         exit()
                 parameters[key] = value
         self.checkDictionary(parameters)
-        parameters[self.order_key] = self.splitOrderString(parameters[self.order_key])
+        parameters[self.order_key] = self.splitOrderString(
+            parameters[self.order_key])
         for key in parameters:
             print(key + ": " + str(parameters[key]))
         return parameters

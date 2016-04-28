@@ -67,8 +67,8 @@ class Parameters():
                 len(arguments['HAND_TO_USE_ORDER'].replace('L', '')) == 2 and
                 len(arguments['HAND_TO_USE_ORDER']) -
                 len(arguments['HAND_TO_USE_ORDER'].replace('R', '')) == 2):
-                    print('One or more definition values are invalid! Sorry!')
-                    sys.exit(0)
+            print('One or more definition values are invalid! Sorry!')
+            sys.exit(0)
 
     def getParameters(self):
         return self.parameters
@@ -130,17 +130,17 @@ class ClickRecorder(QtWidgets.QMainWindow):
         if (self.shown_key and self.pressed_key
                 and self.testActive and self.counter <= self.repetitions
                 and not self.keyPressed):
-                    print('Timespan ' + str(timediff))
-                    self.writeToCSV(self.user,
-                                    self.handedness,
-                                    self.repetitions,
-                                    self.time_between_signals_ms,
-                                    timediff, self.counter,
-                                    self.shown_key,
-                                    self.pressed_key,
-                                    self.orderTests[self.actualTest],
-                                    self.handUsedOrder[self.actualTest])
-                    self.keyPressed = True
+            print('Timespan ' + str(timediff))
+            self.writeToCSV(self.user,
+                            self.handedness,
+                            self.repetitions,
+                            self.time_between_signals_ms,
+                            timediff, self.counter,
+                            self.shown_key,
+                            self.pressed_key,
+                            self.orderTests[self.actualTest],
+                            self.handUsedOrder[self.actualTest])
+            self.keyPressed = True
 
         elif ev.key() == QtCore.Qt.Key_Return:
             print('Enter')
@@ -159,7 +159,7 @@ class ClickRecorder(QtWidgets.QMainWindow):
                 self.drawRandomRect(event, qp)
             elif (self.orderTests[self.actualTest] == 'Post' and
                   self.testActive):
-                    self.drawRandomText(event, qp)
+                self.drawRandomText(event, qp)
             elif not self.testActive:
                 self.drawText(event, qp)
         qp.end()
