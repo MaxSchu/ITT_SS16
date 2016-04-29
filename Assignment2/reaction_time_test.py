@@ -11,9 +11,9 @@ class FileReader():
     repetition_key = "REPETITIONS"
     time_between_key = "TIME_BETWEEN_SIGNALS_MS"
     order_key = "ORDER"
-
-    def __init__(self):
-        self.readFile()
+    gender_key = "GENDER"
+    age_key = "AGE"
+    handedness_key = "HANDEDNESS"
 
     def readFile(self):
         parameters = {}
@@ -24,7 +24,7 @@ class FileReader():
                 values = line.split(": ")
                 key = values[0]
                 value = values[1]
-                if (key == self.repetition_key or key == self.time_between_key):
+                if (key == self.repetition_key or key == self.time_between_key or key == self.age_key):
                     try:
                         value = int(value)
                     except ValueError:
@@ -43,14 +43,17 @@ class FileReader():
         self.checkKey(dictionary, self.repetition_key)
         self.checkKey(dictionary, self.time_between_key)
         self.checkKey(dictionary, self.order_key)
+        self.checkKey(dictionary, self.gender_key)
+        self.checkKey(dictionary, self.age_key)
+        self.checkKey(dictionary, self.handedness_key)
 
     def checkKey(self, dictionary, key):
         if (key in dictionary.keys()):
             if (dictionary[key] is None or dictionary[key] == ""):
-                print("no value for " + key)
+                print("no value for " + key + "variable")
                 exit()
         else:
-            print(key + " not found")
+            print(key + " variable not found")
             exit()
 
     def splitOrderString(self, values):
@@ -66,7 +69,6 @@ class CSVWriter():
 
     def __init__(self, participantId, values):
         super(CSVWriter, self).__init__()
-        print("in writer")
         self.createCSV(participantId, values)
 
     def createCSV(self, participantId, values):
