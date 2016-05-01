@@ -21,10 +21,12 @@ class FileReader():
             file = open(sys.argv[1])
             for line in file:
                 line = line.replace("\n", "")
-                values = line.split(": ")
+                line = line.replace(" ", "")
+                values = line.split(":")
                 key = values[0]
                 value = values[1]
-                if (key == self.repetition_key or key == self.time_between_key or key == self.age_key):
+                if (key == self.repetition_key or key == self.time_between_key
+                        or key == self.age_key):
                     try:
                         value = int(value)
                     except ValueError:
@@ -50,14 +52,14 @@ class FileReader():
     def checkKey(self, dictionary, key):
         if (key in dictionary.keys()):
             if (dictionary[key] is None or dictionary[key] == ""):
-                print("no value for " + key + "variable")
+                print("no value for " + key + " variable")
                 exit()
         else:
             print(key + " variable not found")
             exit()
 
     def splitOrderString(self, values):
-        orderList = list(map(int, values.split(" ")))
+        orderList = list(map(int, values.split(",")))
         if(len(orderList) != 4):
             print("Invalid order parameters")
             exit()
