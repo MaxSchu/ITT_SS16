@@ -118,7 +118,7 @@ class ClickRecorder(QtWidgets.QWidget):
         self.palette = QtGui.QPalette()
         self.position = (0, 0)
         self.showIntro = True
-        self.maxCountdown = 5
+        self.maxCountdown = 30
         self.countdown = 0
         self.timeBetweenSignals = values[time_between_key] / 1000
         self.order = values[order_key]
