@@ -1,4 +1,4 @@
-What does Hornbæk say about the relationship between self-reported and objectively measured task performance?
+-What does Hornbæk say about the relationship between self-reported and objectively measured task performance?
 
 The subjective and objective usability data collected can differ from each other. For expample Hornbæk and Law found
 out "that the users' perception of outcomes did not correlate with actual measured outcomes"(p.35). It is in the
@@ -9,7 +9,7 @@ Regarding this one can assume, that the different dimensions of an usability exp
 independent and thus should be collected on all dimensions independently.(p.36)
 
 
-Describe advantages and limitations of research hypotheses.
+-Describe advantages and limitations of research hypotheses.
 
 There are different opinions on wether research hytothesis benefit or hinder experiments. 
 A good hypothesis can be more or less detailed, but should always be based on earlier work,
@@ -32,7 +32,32 @@ On top of that hypothesis may blind the researcher to valuable findings. If you 
 theorie, you are more likely to reject unmatching evidence, rather than revising theorie. It is possible,
 that holding a hypothesis may distract from interesting findings.(p.15f)
 
-Is it acceptable to conduct user studies with media informatics students as participants instead of a broad sample of potential users?
+-Is it acceptable to conduct user studies with media informatics students as participants instead of a broad sample of potential users?
 
+Campbell said, that the experience of the subject of each participant influences the result of the study in a significant way.(p.26)
+So it is important to find people with the necessary characteristics to address the research question. Even within the group of media informatics students, 
+each person can have very similar characteristics that differ from other potential groups of participants. When selecting participants as a sample for an experiment, it is often wished
+to generalize any measured effects to a bigger group of people. Regarding this you may want to have a representative group of people in your experiment.
+"The key question is to understand if characteristics of participants may influence the size or direction of effects, when on is considering
+broaderor more focused groups of users."(p. 27) It is no secret, that media informatics students offer a lot of computer skills, which
+most of the other general participants might not have. But still as Campbell said in the context of organizational psychology: "the data do not support
+the belief that lab studies produce different results than filed studies. Perhaps college students really are people." It is very dependent on the experiment it self. 
+For instance when you try to measure the usability of a broadly used system like Facebook, then media informatics stundents are not that different from 
+the common volunteer and user of said system. On the other side when you wish to measure effects for a specific ethnic minority, a group of media informatic
+students wont let you generalize to a specific group like that. In regards of that it is acceptalbe to conduct user studies with media informatics students,
+but only when its not necessary to measure effects for a specific target group.
 
+-What are advantages and limitations?
 
+A media informatics student is mostly common with usability principles and might be able to indentify usability problems that other
+participants might not see. Especially when testing computer software the expertise of a media informatics student might prove quite
+helpful to identify the needs of the common user.
+Of course the most obvious advantage in using media informatics students is the availability of participants for you studies. Yout don't need
+many resources to gather a rather large group of participants for your study.
+
+The use of only media informatic students may bias the outcome of your study. There may be effects that only occur for computer affine people,
+that dont occur for the rest of your target group.
+
+-Name one topic for a user study where it would be problematic to have only media informatics students as participants. Name one counter-example
+Problematic: User study on the
+Not Problematic: Usability Evaluation of picture editing software
