@@ -4,10 +4,11 @@
 import sys
 import csv
 import os
-from PyQt5 import QtGui, QtWidgets, QtCore
 import threading
 import time
 import random
+from PyQt5 import QtGui, QtWidgets, QtCore
+
 
 participant_key = "PARTICIPANT"
 repetition_key = "REPETITIONS"
@@ -86,7 +87,7 @@ class CSVWriter():
 
     def createCSV(self, participantId, values):
         values = self.addMissingKeys(values)
-        self.csvFileName = (os.path.dirname(__file__) + '/Test_Result'
+        self.csvFileName = (os.path.dirname(__file__) + 'Test_Result'
                             + str(participantId) + '.csv')
 
         with open(self.csvFileName, 'a', newline='') as csvFile:
@@ -117,15 +118,15 @@ class ClickRecorder(QtWidgets.QWidget):
         self.palette = QtGui.QPalette()
         self.position = (0, 0)
         self.showIntro = True
-        self.maxCountdown = 2
+        self.maxCountdown = 10
         self.countdown = 0
         self.timeBetweenSignals = values[time_between_key] / 1000
         self.order = values[order_key]
         self.currentCondition = 0
         self.maxRepetitions = values[repetition_key]
         self.repetition = 0
-        self.keys = (QtCore.Qt.Key_B, QtCore.Qt.Key_V)
-        self.keyMapping = {self.keys[0]: "B", self.keys[1]: "V"}
+        self.keys = (QtCore.Qt.Key_V, QtCore.Qt.Key_B)
+        self.keyMapping = {self.keys[0]: "V", self.keys[1]: "B"}
         # 0 -> attentive; 1 -> pre-attentive
         self.mode = 0
         # 0 -> without distractions; 1 -> with distractions
@@ -139,13 +140,13 @@ class ClickRecorder(QtWidgets.QWidget):
         self.correctKey = ""
         self.blockDrawCalls = False
 
-        self.instructionsPreAttentive = """Everytime a SINGLE RECTANGLE appears press the V key.
-Everytime TWO RECTANGLES appear press the B key.
+        self.instructionsPreAttentive = """Everytime a SINGLE RECTANGLE appears press the "V"-KEY.
+Everytime TWO RECTANGLES appear press the "B"-KEY.
 Try to press the corresponding key as fast as possible!
 Use the index-finger of your right hand only."""
 
-        self.instructionsAttentive = """Everytime an EVEN NUMBER appears press the V key.
-Everytime an ODD NUMBER appears press the B key.
+        self.instructionsAttentive = """Everytime an EVEN NUMBER appears press the "V"-KEY.
+Everytime an ODD NUMBER appears press the "B"-KEY.
 Try to press the corresponding key as fast as possible!
 Use the index-finger of your right hand only."""
         self.initUI()
@@ -214,7 +215,8 @@ Use the index-finger of your right hand only."""
 
     def changeCatPic(self):
         self.palette.setBrush(
-            QtGui.QPalette.Background, QtGui.QBrush(QtGui.QImage("assets2/cat" + str(random.randint(1, 20)) + ".jpg")))
+            QtGui.QPalette.Background, QtGui.QBrush(QtGui.QImage(
+                "assets2/cat" + str(random.randint(1, 20)) + ".jpg")))
         self.setPalette(self.palette)
 
     def paintEvent(self, event):
@@ -236,14 +238,13 @@ Use the index-finger of your right hand only."""
         self.position = (random.randint(0, 900), random.randint(0, 700))
         if self.mode == 0:
             self.randInt = random.randint(1, 8)
-            self.correctKey = list(
-                (self.keyMapping).keys())[self.randInt % 2]
+            self.correctKey = self.keys[self.randInt % 2]
         else:
             self.randInt = random.randint(0, 1)
             if self.randInt == 0:
-                self.correctKey = QtCore.Qt.Key_V
-            else:
                 self.correctKey = QtCore.Qt.Key_B
+            else:
+                self.correctKey = QtCore.Qt.Key_V
 
         self.values.update(
             {expected_button_key: self.keyMapping[self.correctKey]})
