@@ -54,10 +54,12 @@ participants might not see. Especially when testing computer software the expert
 helpful to identify the needs of the common user.
 Of course the most obvious advantage in using media informatics students is the availability of participants for you studies. Yout don't need
 many resources to gather a rather large group of participants for your study.
-
 The use of only media informatic students may bias the outcome of your study. There may be effects that only occur for computer affine people,
 that dont occur for the rest of your target group.
 
 -Name one topic for a user study where it would be problematic to have only media informatics students as participants. Name one counter-example
-Problematic: User study on the
-Not Problematic: Usability Evaluation of picture editing software
+
+Problematic: A study about an interface for mobile phones. There is a much broader usergroup to be evaluated than just media informatics students.
+For instance a media informatics studentis very good in using a smartphone, but an older person might have many problems while dealing with the same tasks.
+Not Problematic: For example a user study that evaluates the interface of an IDE for programming. The programming skills of media informatics
+students should be just suited for such a study, because there are both programming beginners and experts within the sample.
