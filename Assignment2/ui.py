@@ -5,9 +5,9 @@ import time
 import random
 
 
-class Example(QtWidgets.QWidget):
+class ClickRecorder(QtWidgets.QWidget):
     def __init__(self, maxRepetitions, timeBetweenSignals, order):
-        super(Example, self).__init__()
+        super(ClickRecorder, self).__init__()
         self.randInt = 0
         self.palette = QtGui.QPalette()
         self.position = (0, 0)
@@ -222,7 +222,7 @@ Use the index-finger of your right hand only."""
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    ex = Example(10, 1, (1, 2, 3, 4))
+    ex = ClickRecorder(10, 1, (1, 2, 3, 4))
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
