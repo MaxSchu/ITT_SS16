@@ -1,6 +1,6 @@
 -What does Hornbæk say about the relationship between self-reported and objectively measured task performance?
 
-The subjective and objective usability data collected can differ from each other. For expample Hornbæk and Law found
+The subjective and objective usability data collected can differ from each other. For example, Hornbæk and Law found
 out "that the users' perception of outcomes did not correlate with actual measured outcomes"(p.35). It is in the
 individual nature of experience, that everybody experiences the given system differently. Experience is subjective
 and thus it may differ fundamentally from the objective quality measures. "Given that, it may be
@@ -11,24 +11,24 @@ independent and thus should be collected on all dimensions independently.(p.36)
 
 -Describe advantages and limitations of research hypotheses.
 
-There are different opinions on wether research hytothesis benefit or hinder experiments. 
+There are different opinions on whether research hypotheses benefit or hinder experiments. 
 A good hypothesis can be more or less detailed, but should always be based on earlier work,
-relevant theories or predictive models. There are two views concerning hypothesis, that can
+relevant theories or predictive models. There are two views concerning hypotheses, that can
 be labeled as "testing theory" and "hunting phenomena". These two viewpoints discuss the
-benefits and drawbacks of using hypothesis in an experiment.(p13)
-Hypothesis help gaining clarity about the purpose of the experiment and support focusing
+benefits and drawbacks of using hypotheses in an experiment.(p13)
+Hypotheses help gaining clarity about the purpose of the experiment and support focusing
 on the actual research question. To provide those benefits a hypothesis has to be testable, concise
-and name key constructs.(p.14) Hypothesis are based on the relevant theorie for an experiment. This forces
+and name key constructs.(p.14) Hypotheses are based on the relevant theorie for an experiment. This forces
 the researcher to think about the experiment beforehand.(p.15)
 Formulating a hypothesis helps to reflect what earlier work has done and thus you can use the findings
 of earlier research to motivate and design the experiment.(p.14)
-Hypothesis prove quite helpful for reporting an experiment. For a reader the report with a hypothesis
+Hypothesis prove quite helpful for reporting an experiment. For a reader reports with a hypothesis
 provides structure and makes it conform to the usual way of reporting experiments.(p14f)
 
-On the other hand hypothesis in experiments also have several disadvantages.
-From a psychologist's point of view hypothesis are too often formulated only to be disconformed.
-The failing reject of the hypothesis should also be a valuable outcome.(p.15)
-On top of that hypothesis may blind the researcher to valuable findings. If you depend too heavily on
+On the other hand, hypotheses in experiments also have several disadvantages.
+From a psychologist's point of view hypotheses are too often formulated only to be disconformed.
+The failing reject of the hypotheses should also be a valuable outcome.(p.15)
+On top of that hypotheses may blind the researcher to valuable findings. If you depend too heavily on
 theorie, you are more likely to reject unmatching evidence, rather than revising theorie. It is possible,
 that holding a hypothesis may distract from interesting findings.(p.15f)
 
@@ -41,25 +41,25 @@ to generalize any measured effects to a bigger group of people. Regarding this y
 "The key question is to understand if characteristics of participants may influence the size or direction of effects, when on is considering
 broaderor more focused groups of users."(p. 27) It is no secret, that media informatics students offer a lot of computer skills, which
 most of the other general participants might not have. But still as Campbell said in the context of organizational psychology: "the data do not support
-the belief that lab studies produce different results than filed studies. Perhaps college students really are people." It is very dependent on the experiment it self. 
-For instance when you try to measure the usability of a broadly used system like Facebook, then media informatics stundents are not that different from 
-the common volunteer and user of said system. On the other side when you wish to measure effects for a specific ethnic minority, a group of media informatic
-students wont let you generalize to a specific group like that. In regards of that it is acceptalbe to conduct user studies with media informatics students,
+the belief that lab studies produce different results than filed studies. Perhaps college students really are people." It is very dependent on the experiment itself. 
+For instance when you try to measure the usability of a broadly used system like Facebook, then media informatics students are not that different from 
+the common volunteer and user of said system. On the other side when you wish to measure effects for a specific ethnic minority, a group of media informatics
+students won't let you generalize to a specific group like that. In regards to that it is acceptable to conduct user studies with media informatics students,
 but only when its not necessary to measure effects for a specific target group.
 
 -What are advantages and limitations?
 
-A media informatics student is mostly common with usability principles and might be able to indentify usability problems that other
+A media informatics student is mostly common with usability principles and might be able to identify usability problems that other
 participants might not see. Especially when testing computer software the expertise of a media informatics student might prove quite
 helpful to identify the needs of the common user.
-Of course the most obvious advantage in using media informatics students is the availability of participants for you studies. Yout don't need
+Of course the most obvious advantage in using media informatics students is the availability of participants for you studies. You don't need
 many resources to gather a rather large group of participants for your study.
 The use of only media informatic students may bias the outcome of your study. There may be effects that only occur for computer affine people,
-that dont occur for the rest of your target group.
+that don't occur for the rest of your target group.
 
 -Name one topic for a user study where it would be problematic to have only media informatics students as participants. Name one counter-example
 
-Problematic: A study about an interface for mobile phones. There is a much broader usergroup to be evaluated than just media informatics students.
-For instance a media informatics studentis very good in using a smartphone, but an older person might have many problems while dealing with the same tasks.
+Problematic: A study about an interface for mobile phones. There is a much broader user group to be evaluated than just media informatics students.
+For instance a media informatics student is very good in using a smartphone, but an older person might have many problems while dealing with the same tasks.
 Not Problematic: For example a user study that evaluates the interface of an IDE for programming. The programming skills of media informatics
 students should be just suited for such a study, because there are both programming beginners and experts within the sample.
