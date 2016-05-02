@@ -9,8 +9,8 @@ import time
 import random
 from PyQt5 import QtGui, QtWidgets, QtCore
 
-# Please add the assets2 folder to the same directory like this python script
-# otherwise the direction mode doesn't work
+# please add the assets2 folder to the same directory like this python script
+# otherwise the distraction mode doesn't work
 
 # keys for CSV header
 participant_key = "PARTICIPANT"
