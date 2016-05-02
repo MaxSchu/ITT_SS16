@@ -9,6 +9,8 @@ import time
 import random
 from PyQt5 import QtGui, QtWidgets, QtCore
 
+# Please add the assets2 folder to the same directory like this python script
+# otherwise the direction mode doesn't work
 
 # keys for CSV header
 participant_key = "PARTICIPANT"
@@ -207,7 +209,7 @@ Use the index-finger of your right hand only."""
         t = threading.Timer(1.0, self.lowerCountdown)
         t.start()
 
-    # clears out the background for the instructions-screen
+    # clears out the background for the instructions screen
     def clearBackground(self):
         self.palette.setColor(QtGui.QPalette.Background, QtCore.Qt.white)
         self.setPalette(self.palette)
