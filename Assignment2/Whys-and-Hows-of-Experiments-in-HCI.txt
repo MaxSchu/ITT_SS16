@@ -1,6 +1,6 @@
 -What does Hornbæk say about the relationship between self-reported and objectively measured task performance?
 
-The subjective and objective usability data collected can differ from each other. For example, Hornbæk and Law found
+The self-reported and objectively measured task performance can differ from each other. Hornbæk and Law found
 out "that the users' perception of outcomes did not correlate with actual measured outcomes"(p.35). It is in the
 individual nature of experience, that everybody experiences the given system differently. Experience is subjective
 and thus it may differ fundamentally from the objective quality measures. "Given that, it may be
@@ -25,8 +25,7 @@ of earlier research to motivate and design the experiment.(p.14)
 Hypothesis prove quite helpful for reporting an experiment. For a reader reports with a hypothesis
 provides structure and makes it conform to the usual way of reporting experiments.(p14f)
 
-On the other hand, hypotheses in experiments also have several disadvantages.
-From a psychologist's point of view hypotheses are too often formulated only to be disconformed.
+Hypotheses in experiments also have several disadvantages. From a psychologist's point of view hypotheses are too often formulated only to be disconformed.
 The failing reject of the hypotheses should also be a valuable outcome.(p.15)
 On top of that hypotheses may blind the researcher to valuable findings. If you depend too heavily on
 theorie, you are more likely to reject unmatching evidence, rather than revising theorie. It is possible,
@@ -34,26 +33,27 @@ that holding a hypothesis may distract from interesting findings.(p.15f)
 
 -Is it acceptable to conduct user studies with media informatics students as participants instead of a broad sample of potential users?
 
-Campbell said, that the experience of the subject of each participant influences the result of the study in a significant way.(p.26)
+Campbell said, that the experience of the subject of each participant influences the result of a study in a significant way.(p.26)
 So it is important to find people with the necessary characteristics to address the research question. Even within the group of media informatics students, 
 each person can have very similar characteristics that differ from other potential groups of participants. When selecting participants as a sample for an experiment, it is often wished
 to generalize any measured effects to a bigger group of people. Regarding this you may want to have a representative group of people in your experiment.
 "The key question is to understand if characteristics of participants may influence the size or direction of effects, when on is considering
 broaderor more focused groups of users."(p. 27) It is no secret, that media informatics students offer a lot of computer skills, which
-most of the other general participants might not have. But still as Campbell said in the context of organizational psychology: "the data do not support
+most of the other participants might not have. But still as Campbell said in the context of organizational psychology: "the data do not support
 the belief that lab studies produce different results than filed studies. Perhaps college students really are people." It is very dependent on the experiment itself. 
 For instance when you try to measure the usability of a broadly used system like Facebook, then media informatics students are not that different from 
-the common volunteer and user of said system. On the other side when you wish to measure effects for a specific ethnic minority, a group of media informatics
-students won't let you generalize to a specific group like that. In regards to that it is acceptable to conduct user studies with media informatics students,
-but only when its not necessary to measure effects for a specific target group.
+the common volunteer and user of said system. On the other side when you wish to measure effects for a specific ethnic minority, a group of media informatics students 
+won't let you generalize to a specific group like that. In regards to that it is acceptable to conduct user studies with media informatics students, but only when its not 
+necessary to measure effects for a specific target group.
 
 -What are advantages and limitations?
 
-A media informatics student is mostly common with usability principles and might be able to identify usability problems that other
+A media informatics student is mostly familiar with usability principles and might be able to identify usability problems that other
 participants might not see. Especially when testing computer software the expertise of a media informatics student might prove quite
-helpful to identify the needs of the common user.
-Of course the most obvious advantage in using media informatics students is the availability of participants for you studies. You don't need
-many resources to gather a rather large group of participants for your study.
+helpful to identify the needs of the common user. 
+The most obvious advantage in using media informatics students is the availability of participants for your studies. You don't need
+many resources to gather a rather large group of participants for your study. 
+
 The use of only media informatic students may bias the outcome of your study. There may be effects that only occur for computer affine people,
 that don't occur for the rest of your target group.
 
