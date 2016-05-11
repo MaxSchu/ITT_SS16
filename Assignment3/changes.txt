@@ -1,0 +1,15 @@
+We made the following changes to improve our program:
+
+- Our subjects had problems to remember which key they had to press during the tests. We changes the keys which had to "1" when
+one rectangle appears and "2" when two rectangle appear (pre-attentive), as well as "1" when an uneven number appears and "2" when an even number appears
+(attentive). These keys should be easier to map to the specific impulse.
+
+- We added the timestamp in a format which is readable to humans to the log files (date and time).
+
+- We only show the instructions for the full 30 seconds before the first condition. For the following conditions we
+show the instructions for half of the time, because waiting for the instructions to disappear consumed most of the time while conducting the experiment.
+
+- We let each proband test the program first to make sure they know what to do and what to expect.
+
+- To avoid misconceptions during the evaluation of the data, we separate the order of the conditions for each subject with hyphens ("-") instead of
+commas (","), because commas are already reserved to separate the columns in the CSV-files.
