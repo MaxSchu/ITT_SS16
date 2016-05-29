@@ -38,10 +38,6 @@ class SuperText(QtWidgets.QTextEdit):
                                  QtGui.QTextCursor.MoveAnchor)
         self.setTextCursor(self.cursor)
 
-    def keyReleaseEvent(self, ev):
-        super(SuperText, self).keyReleaseEvent(ev)
-        print("Released: " + str(ev.text()))
-
     def keyPressEvent(self, event):
         if not self.testStarted:
             self.startTime = clock.time()
@@ -139,7 +135,7 @@ class SuperText(QtWidgets.QTextEdit):
         return (float(typedCharactersCount) / (float(clock.time()) - float(self.startTime)) * float(60)) / float(5)
 
     def logStoredLog(self, log):
-        if log == None:
+        if log is None:
             self.logger.logData(self.storedLog)
             return
         self.logger.logData(log)
@@ -161,8 +157,9 @@ class CSVLogger:
 class ChordInputMethod(QtCore.QObject):
     VALID_LETTERS = "[a-zäöüß ]"
 
-    def __init__(self):
+    def __init__(self, superText):
         super(ChordInputMethod, self).__init__()
+        self.superText = superText
         self.keys = []
         self.chordCode = []
         self.chordSwitcher = False
@@ -297,7 +294,10 @@ class ChordInputMethod(QtCore.QObject):
                 self.chordSwitcher = False
 
             # always filter press events
-            return False
+            if (ev.text() == " "):
+                return True
+            else:
+                return False
         elif ev.type() == Qt.QKeyEvent.KeyRelease:  # release chord once one of the keys is released
             if " " not in self.keys:
                 # space has to be used to build a chord
@@ -308,7 +308,7 @@ class ChordInputMethod(QtCore.QObject):
             if len(self.keys) > 1 and not self.chordSwitcher:
                 # if chord is used, remove the past characters first
                 self.removePastLetter(
-                    watched_textedit, len(self.keys))
+                    watched_textedit, len(self.keys) - 1)
                 result = self.getWord()
                 Qt.qApp.postEvent(watched_textedit, QtGui.QKeyEvent(
                     Qt.QKeyEvent.KeyPress, 0, QtCore.Qt.NoModifier, text=result))
@@ -325,6 +325,9 @@ class ChordInputMethod(QtCore.QObject):
             if ev.text() in self.keys:
                 # remove released buttons from set
                 self.keys.remove(ev.text())
+            if ev.text() == " " and not self.chordSwitcher:
+                Qt.qApp.postEvent(watched_textedit, QtGui.QKeyEvent(
+                    Qt.QKeyEvent.KeyPress, 0, QtCore.Qt.NoModifier, text=" "))
             return False
         else:
             print("Should'nt arrive here: " + str(ev))
@@ -340,7 +343,7 @@ def main():
                  ]
     logger = CSVLogger()
     super_text = SuperText(sentences, logger)
-    chord_input = ChordInputMethod()
+    chord_input = ChordInputMethod(super_text)
     super_text.installEventFilter(chord_input)
 
     sys.exit(app.exec_())
