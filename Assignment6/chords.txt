@@ -1,3 +1,5 @@
 te:test
 ba:baum,bäume
 st:straße
+f:für,faul
+f:font
