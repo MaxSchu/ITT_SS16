@@ -12,11 +12,15 @@ class SuperText(QtWidgets.QTextEdit):
     currentText = ""
     currentWord = ""
     currentSentence = ""
+    typedText = ""
     sentenceCount = 0
+    testStarted = False
+    loadingNextSentence = False
 
     def __init__(self, sentences, logger):
         super(SuperText, self).__init__()
         self.setPlainText(sentences[0])
+        self.currentText = sentences[0]
         self.initUI()
         self.logger = logger
         self.sentences = sentences
@@ -34,8 +38,12 @@ class SuperText(QtWidgets.QTextEdit):
         self.setTextCursor(self.cursor)
 
     def keyPressEvent(self, event):
+        if not self.testStarted:
+            self.startTime = clock.time()
+            self.testStarted = True
         self.logger.logData(self.buildLogData(
-            "key_pressed", event.key(), clock.time(), 0))
+            "key_pressed", event.key(), clock.time(),
+            0, self.calcWordsPerMinute()))
         if self.currentWord == "":
             self.startWordTimer()
         if self.currentSentence == "":
@@ -44,18 +52,21 @@ class SuperText(QtWidgets.QTextEdit):
         QtWidgets.QTextEdit.keyPressEvent(self, event)
 
     def textChangedCallback(self):
-        if len(self.currentText) > len(self.toPlainText()):
-            self.deleteLastChar()
-            return
-        additions = self.getAdditions()
-        self.addChar(additions)
-        self.checkWordEnd(additions)
-        self.checkSentenceEnd(additions)
+        if not self.loadingNextSentence:
+            if len(self.currentText) > len(self.toPlainText()):
+                self.deleteLastChar()
+                return
+            additions = self.getAdditions()
+            self.addChar(additions)
+            self.checkWordEnd(additions)
+            self.checkSentenceEnd(additions)
 
     def getAdditions(self):
         if len(self.currentText) < len(self.toPlainText()):
+            lengthDifference = len(self.toPlainText()) - len(self.currentText)
             self.currentText = self.toPlainText()
-            return self.currentText[len(self.currentText) - 1]
+            self.typedText += self.currentText[-lengthDifference:]
+            return self.currentText[-lengthDifference:]
         return ""
 
     def deleteLastChar(self):
@@ -64,6 +75,8 @@ class SuperText(QtWidgets.QTextEdit):
             self.currentWord = self.currentWord[:-1]
         if len(self.currentSentence) >= 1:
             self.currentSentence = self.currentSentence[:-1]
+        if len(self.typedText) >= 1:
+            self.typedText = self.typedText[:-1]
 
     def addChar(self, char):
         if char != "\n":
@@ -76,7 +89,8 @@ class SuperText(QtWidgets.QTextEdit):
         if char == "\n" and self.currentSentence != "":
             time = clock.time() - self.sentenceTime
             self.logger.logData(self.buildLogData(
-                "sentence_finished", self.currentSentence, self.sentenceTime, time))
+                "sentence_finished", self.currentSentence, self.sentenceTime,
+                time, self.calcWordsPerMinute()))
             self.currentSentence = ""
             self.setupNextSentence()
 
@@ -86,7 +100,8 @@ class SuperText(QtWidgets.QTextEdit):
             if self.currentWord != "":
                 time = clock.time() - self.wordTime
                 self.logger.logData(self.buildLogData(
-                    "word_finished", self.currentWord, self.wordTime, time))
+                    "word finished", self.currentWord, self.wordTime,
+                    time, self.calcWordsPerMinute()))
                 self.currentWord = ""
 
     def startWordTimer(self):
@@ -96,30 +111,39 @@ class SuperText(QtWidgets.QTextEdit):
         self.sentenceTime = clock.time()
 
     def setupNextSentence(self):
+        self.loadingNextSentence = True
         self.sentenceCount += 1
         if self.sentenceCount == len(self.sentences):
+            self.logger.logData(self.buildLogData("test finished", self.typedText,
+                                                  self.startTime, (clock.time(
+                                                  ) - self.startTime),
+                                                  self.calcWordsPerMinute()))
             exit()
         self.setPlainText(self.sentences[self.sentenceCount])
+        self.currentText = self.sentences[self.sentenceCount]
         self.setTextCursor(self.cursor)
+        self.loadingNextSentence = False
 
-    def buildLogData(self, eventType, value, startTime, timeNeeded):
+    def buildLogData(self, eventType, value, startTime, timeNeeded, wpm):
         return {"event_type": eventType, "value": value,
-                "start_time": startTime, "time_needed": timeNeeded}
+                "start_time": startTime, "time_passed": timeNeeded,
+                "words_per_minute": wpm}
+
+    def calcWordsPerMinute(self):
+        typedCharactersCount = len(self.typedText)
+        return (float(typedCharactersCount) / (float(clock.time()) - float(self.startTime)) * float(60)) / float(5)
 
 
 class CSVLogger:
 
-    keys = ["event_type", "value", "start_time", "time_needed"]
+    keys = ["event_type", "value", "start_time",
+            "time_passed", "words_per_minute"]
 
     def __init__(self):
-        print("logger instantiated")
         self.csvWriter = csv.DictWriter(sys.stdout, self.keys)
 
     def logData(self, data):
-        row = {}
-        for key in data:
-            row[key] = data[key]
-        self.csvWriter.writerow(row)
+        self.csvWriter.writerow(data)
         sys.stdout.flush
 
 
