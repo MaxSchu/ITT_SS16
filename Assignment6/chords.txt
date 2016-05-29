@@ -1,0 +1,3 @@
+te:test
+ba:baum,bäume
+st:straße
