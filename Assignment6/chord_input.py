@@ -38,6 +38,10 @@ class SuperText(QtWidgets.QTextEdit):
                                  QtGui.QTextCursor.MoveAnchor)
         self.setTextCursor(self.cursor)
 
+    def keyReleaseEvent(self, ev):
+        super(SuperText, self).keyReleaseEvent(ev)
+        print("Released: " + str(ev.text()))
+
     def keyPressEvent(self, event):
         if not self.testStarted:
             self.startTime = clock.time()
