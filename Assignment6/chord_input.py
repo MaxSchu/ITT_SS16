@@ -97,12 +97,14 @@ class SuperText(QtWidgets.QTextEdit):
 
     def checkWordEnd(self, char):
         time = 0
-        if char == " " or not char.isalpha() and char != "'":
+        if char == "":
+            return
+        if char[len(char)-1] == " " or not char.isalpha():
             if self.currentWord != "":
                 time = clock.time() - self.wordTime
-                self.storedLog = self.buildLogData(
+                self.logger.logData(self.buildLogData(
                     "word finished", self.currentWord, self.wordTime,
-                    time, self.calcWordsPerMinute())
+                    time, self.calcWordsPerMinute()))
                 self.currentWord = ""
 
     def startWordTimer(self):
@@ -133,12 +135,6 @@ class SuperText(QtWidgets.QTextEdit):
     def calcWordsPerMinute(self):
         typedCharactersCount = len(self.typedText)
         return (float(typedCharactersCount) / (float(clock.time()) - float(self.startTime)) * float(60)) / float(5)
-
-    def logStoredLog(self, log):
-        if log == None:
-            self.logger.logData(self.storedLog)
-            return
-        self.logger.logData(log)
 
 
 class CSVLogger:
