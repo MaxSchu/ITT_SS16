@@ -1,0 +1,16 @@
+I. Scott MacKenzie and R. William Soukoreff point out some practical factors concerning evaluation and optimisation of text entry for mobile
+comuputing. Firstly, it is mentioned that the methodology used for evaluation has to be reproducible and generalizable. This means that the method
+can be reused to get the same results and the results also apply to other contexts outside of the controlled experiment.
+It is then stated that text copy tasks should be prefered over text entry tasks, because they exclude "behaviours not required of the interaction 
+technique" and errors can be indentified easier.
+Regarding the selection of subjects MacKenzie and Soukoreff say, that the novice experience is more important "due to the target market". "Immediate
+usability" is an important key factor.
+When evaluating a text entry method, reasearchers should focus on both, quantitative and qualitative analyses. "Common pit-falls" like
+inaccuracy, lack of control and baseline conditions have to be avoided.
+The two primary evaluation metrics for text input are speed and accuracy. Speed can be measured in characters per second and words per minute whereat
+five characters are interpreted as one word. Measuring accuracy can be done manually when the sample size is very small. Doing this manually has the
+advantage that the basic types of errors made while entering text (substitution, omission, insertion, transposition) can be identified quite simple.
+Doing this automatically can be complicated, but should be done for a larger sample size to avoid tabulation errors and speed up the evaluation.
+Two possible approaches to optimising the text entry task are movement minimization and language prediction. There are also hybrid approaches.
+In the mobile context minimizing the number of keys is also important. This can be done using ambiguous keys and mode keys (like SHIFT, ALT, NUM-LOCK).
+The rest of the text then mentions some text entry technologies which are used in the mobile context.
