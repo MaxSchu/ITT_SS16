@@ -4,7 +4,7 @@
 import sys
 from PyQt5 import QtCore, QtWidgets, QtGui
 import csv as csv
-import time as time
+import time as clock
 
 
 class SuperText(QtWidgets.QTextEdit):
@@ -12,12 +12,14 @@ class SuperText(QtWidgets.QTextEdit):
     currentText = ""
     currentWord = ""
     currentSentence = ""
+    sentenceCount = 0
 
-    def __init__(self, example_text, logger):
+    def __init__(self, sentences, logger):
         super(SuperText, self).__init__()
-        self.setPlainText(example_text)
+        self.setPlainText(sentences[0])
         self.initUI()
         self.logger = logger
+        self.sentences = sentences
         self.textChanged.connect(self.textChangedCallback)
 
     def initUI(self):
@@ -26,27 +28,31 @@ class SuperText(QtWidgets.QTextEdit):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setMouseTracking(True)
         self.show()
-        cursor = self.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.MoveAnchor)
-        self.setTextCursor(cursor)
+        self.cursor = self.textCursor()
+        self.cursor.movePosition(QtGui.QTextCursor.End,
+                                 QtGui.QTextCursor.MoveAnchor)
+        self.setTextCursor(self.cursor)
 
     def keyPressEvent(self, event):
+        self.logger.logData(self.buildLogData(
+            "key_pressed", event.key(), clock.time(), 0))
         if self.currentWord == "":
             self.startWordTimer()
         if self.currentSentence == "":
             self.startSentenceTimer()
+
         QtWidgets.QTextEdit.keyPressEvent(self, event)
 
     def textChangedCallback(self):
         if len(self.currentText) > len(self.toPlainText()):
             self.deleteLastChar()
             return
-        lastCharacter = self.getLastChar()
-        self.addChar(lastCharacter)
-        self.checkSentenceEnd(lastCharacter)
-        self.checkWordEnd(lastCharacter)
+        additions = self.getAdditions()
+        self.addChar(additions)
+        self.checkWordEnd(additions)
+        self.checkSentenceEnd(additions)
 
-    def getLastChar(self):
+    def getAdditions(self):
         if len(self.currentText) < len(self.toPlainText()):
             self.currentText = self.toPlainText()
             return self.currentText[len(self.currentText) - 1]
@@ -66,24 +72,44 @@ class SuperText(QtWidgets.QTextEdit):
             self.currentWord = self.currentWord + char
 
     def checkSentenceEnd(self, char):
+        time = 0
         if char == "\n" and self.currentSentence != "":
-            print("sentence: " + self.currentSentence)
+            time = clock.time() - self.sentenceTime
+            self.logger.logData(self.buildLogData(
+                "sentence_finished", self.currentSentence, self.sentenceTime, time))
             self.currentSentence = ""
+            self.setupNextSentence()
 
     def checkWordEnd(self, char):
+        time = 0
         if char == " " or not char.isalpha() and char != "'":
             if self.currentWord != "":
-                print("word: " + self.currentWord)
+                time = clock.time() - self.wordTime
+                self.logger.logData(self.buildLogData(
+                    "word_finished", self.currentWord, self.wordTime, time))
                 self.currentWord = ""
 
     def startWordTimer(self):
+        self.wordTime = clock.time()
 
     def startSentenceTimer(self):
+        self.sentenceTime = clock.time()
+
+    def setupNextSentence(self):
+        self.sentenceCount += 1
+        if self.sentenceCount == len(self.sentences):
+            exit()
+        self.setPlainText(self.sentences[self.sentenceCount])
+        self.setTextCursor(self.cursor)
+
+    def buildLogData(self, eventType, value, startTime, timeNeeded):
+        return {"event_type": eventType, "value": value,
+                "start_time": startTime, "time_needed": timeNeeded}
 
 
 class CSVLogger:
 
-    keys = ["event_type", "value"]
+    keys = ["event_type", "value", "start_time", "time_needed"]
 
     def __init__(self):
         print("logger instantiated")
@@ -100,7 +126,11 @@ class CSVLogger:
 def main():
     app = QtWidgets.QApplication(sys.argv)
     logger = CSVLogger()
-    super_text = SuperText("An 123 Tagen kamen 1342 Personen.", logger)
+    sentences = ["Das ist ein Satz.\n",
+                 "Ich schreibe ein paar Wörter.\n",
+                 "Dieses Programm ist wirklich beeindruckend.\n"
+                 ]
+    super_text = SuperText(sentences, logger)
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
