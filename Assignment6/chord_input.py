@@ -315,7 +315,7 @@ class ChordInputMethod(QtCore.QObject):
             if ev.text() in self.keys:
                 # remove released buttons from set
                 self.keys.remove(ev.text())
-            return True
+            return False
         else:
             print("Should'nt arrive here: " + str(ev))
             return False
@@ -332,7 +332,6 @@ def main():
     super_text = SuperText(sentences, logger)
     chord_input = ChordInputMethod()
     super_text.installEventFilter(chord_input)
-
 
     sys.exit(app.exec_())
 
