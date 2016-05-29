@@ -46,6 +46,7 @@ class ChordInputMethod(QtCore.QObject):
         words = ""
 
         if (len(sys.argv) == 2):
+            # load chord file - use either default or custom file
             try:
                 file = open(sys.argv[1], "r")
             except (IOError, OSError):
