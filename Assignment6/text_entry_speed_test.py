@@ -2,66 +2,105 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt5 import QtCore, QtWidgets
-import re
+from PyQt5 import QtCore, QtWidgets, QtGui
+import csv as csv
+import time as time
 
 
 class SuperText(QtWidgets.QTextEdit):
 
-    def __init__(self, example_text):
+    currentText = ""
+    currentWord = ""
+    currentSentence = ""
+
+    def __init__(self, example_text, logger):
         super(SuperText, self).__init__()
-        self.numbers = []
-        self.template_doc = ""
-        self.setHtml(example_text)
-        self.prev_content = ""
-        self.generateTemplate()
-        self.renderTemplate()
+        self.setPlainText(example_text)
         self.initUI()
+        self.logger = logger
+        self.textChanged.connect(self.textChangedCallback)
 
     def initUI(self):
-        self.setGeometry(100, 100, 400, 400)
+        self.setGeometry(200, 200, 400, 400)
         self.setWindowTitle('Text Entry Speed Test')
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setMouseTracking(True)
         self.show()
+        cursor = self.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.MoveAnchor)
+        self.setTextCursor(cursor)
 
-    def wheelEvent(self, ev):
-        super(SuperText, self).wheelEvent(ev)
-        self.generateTemplate()
-        self.renderTemplate()
-        anc = self.anchorAt(ev.pos())
-        if (anc):
-            self.changeValue(anc, ev.angleDelta().y())
+    def keyPressEvent(self, event):
+        if self.currentWord == "":
+            self.startWordTimer()
+        if self.currentSentence == "":
+            self.startSentenceTimer()
+        QtWidgets.QTextEdit.keyPressEvent(self, event)
 
-    def changeValue(self, val_id, amount):
-        self.numbers[int(str(val_id))] += amount / 120
-        self.renderTemplate()
-
-    def renderTemplate(self):
-        cur = self.textCursor()
-        doc = self.template_doc
-        for num_id, num in enumerate(self.numbers):
-            doc = doc.replace('$' + str(num_id) + '$', '%d' % (num))
-        self.setHtml(doc)
-        self.setTextCursor(cur)
-
-    def generateTemplate(self):
-        content = str(self.toPlainText())
-        numbers = list(re.finditer(" -?[0-9]+", content))
-        numbers = [int(n.group()) for n in numbers]
-        self.numbers = numbers
-        if len(numbers) == 0:
-            self.template_doc = content
+    def textChangedCallback(self):
+        if len(self.currentText) > len(self.toPlainText()):
+            self.deleteLastChar()
             return
-        for num_id in range(len(numbers)):
-            content = re.sub(
-                " " + str(numbers[num_id]), " <a href='%d'>$%d$</a>" % (num_id, num_id), content, count=1)
-        self.template_doc = content
+        lastCharacter = self.getLastChar()
+        self.addChar(lastCharacter)
+        self.checkSentenceEnd(lastCharacter)
+        self.checkWordEnd(lastCharacter)
+
+    def getLastChar(self):
+        if len(self.currentText) < len(self.toPlainText()):
+            self.currentText = self.toPlainText()
+            return self.currentText[len(self.currentText) - 1]
+        return ""
+
+    def deleteLastChar(self):
+        self.currentText = self.toPlainText()
+        if len(self.currentWord) >= 1:
+            self.currentWord = self.currentWord[:-1]
+        if len(self.currentSentence) >= 1:
+            self.currentSentence = self.currentSentence[:-1]
+
+    def addChar(self, char):
+        if char != "\n":
+            self.currentSentence = self.currentSentence + char
+        if char.isalpha() or char == "'":
+            self.currentWord = self.currentWord + char
+
+    def checkSentenceEnd(self, char):
+        if char == "\n" and self.currentSentence != "":
+            print("sentence: " + self.currentSentence)
+            self.currentSentence = ""
+
+    def checkWordEnd(self, char):
+        if char == " " or not char.isalpha() and char != "'":
+            if self.currentWord != "":
+                print("word: " + self.currentWord)
+                self.currentWord = ""
+
+    def startWordTimer(self):
+
+    def startSentenceTimer(self):
+
+
+class CSVLogger:
+
+    keys = ["event_type", "value"]
+
+    def __init__(self):
+        print("logger instantiated")
+        self.csvWriter = csv.DictWriter(sys.stdout, self.keys)
+
+    def logData(self, data):
+        row = {}
+        for key in data:
+            row[key] = data[key]
+        self.csvWriter.writerow(row)
+        sys.stdout.flush
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    super_text = SuperText("An 123 Tagen kamen 1342 Personen.")
+    logger = CSVLogger()
+    super_text = SuperText("An 123 Tagen kamen 1342 Personen.", logger)
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
