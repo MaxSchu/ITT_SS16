@@ -34,10 +34,13 @@ class SuperText(QtWidgets.QTextEdit):
         self.setTextCursor(self.cursor)
 
     def keyPressEvent(self, event):
+        self.logger.logData(self.buildLogData(
+            "key_pressed", event.key(), clock.time(), 0))
         if self.currentWord == "":
             self.startWordTimer()
         if self.currentSentence == "":
             self.startSentenceTimer()
+
         QtWidgets.QTextEdit.keyPressEvent(self, event)
 
     def textChangedCallback(self):
@@ -72,9 +75,8 @@ class SuperText(QtWidgets.QTextEdit):
         time = 0
         if char == "\n" and self.currentSentence != "":
             time = clock.time() - self.sentenceTime
-            self.logger.logData({"event_type": "sentence finished", "value": self.currentSentence,
-                                 "start_time": self.sentenceTime, "time_needed": time})
-            #print("sentence: " + self.currentSentence + " time: " + str(time))
+            self.logger.logData(self.buildLogData(
+                "sentence_finished", self.currentSentence, self.sentenceTime, time))
             self.currentSentence = ""
             self.setupNextSentence()
 
@@ -83,9 +85,8 @@ class SuperText(QtWidgets.QTextEdit):
         if char == " " or not char.isalpha() and char != "'":
             if self.currentWord != "":
                 time = clock.time() - self.wordTime
-                self.logger.logData({"event_type": "word finished", "value": self.currentWord,
-                                     "start_time": self.wordTime, "time_needed": time})
-                #print("word: " + self.currentWord + " time: " + str(time))
+                self.logger.logData(self.buildLogData(
+                    "word_finished", self.currentWord, self.wordTime, time))
                 self.currentWord = ""
 
     def startWordTimer(self):
@@ -100,6 +101,10 @@ class SuperText(QtWidgets.QTextEdit):
             exit()
         self.setPlainText(self.sentences[self.sentenceCount])
         self.setTextCursor(self.cursor)
+
+    def buildLogData(self, eventType, value, startTime, timeNeeded):
+        return {"event_type": eventType, "value": value,
+                "start_time": startTime, "time_needed": timeNeeded}
 
 
 class CSVLogger:
