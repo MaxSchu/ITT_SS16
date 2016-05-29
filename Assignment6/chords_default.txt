@@ -1,4 +1,5 @@
 te:test
 ba:baum,bäume
 st:straße
-bi:bier
+f:für,faul
+f:font

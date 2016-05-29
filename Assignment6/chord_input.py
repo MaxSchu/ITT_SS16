@@ -39,12 +39,30 @@ class ChordInputMethod(QtCore.QObject):
 
     def readChords(self):
         # read the possible chords from a file
+        defaultFile = "chords_default.txt"
         chords = {}
         frozenchord = {}
         chord = ""
         words = ""
 
-        file = open("chords.txt", "r")
+        if (len(sys.argv) == 2):
+            try:
+                file = open(sys.argv[1], "r")
+            except (IOError, OSError):
+                print("Could not find file with chords. Using default file.")
+
+                try:
+                    file = open(defaultFile, "r")
+                except (IOError, OSError):
+                    print("Could not load chord file.")
+                    sys.exit()
+        else:
+            try:
+                file = open(defaultFile, "r")
+            except (IOError, OSError):
+                print("Could not load chord file.")
+                sys.exit()
+
         temp = file.read().splitlines()
 
         for line in temp:
