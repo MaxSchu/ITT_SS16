@@ -128,7 +128,7 @@ class SuperText(QtWidgets.QTextEdit):
         self.loadingNextSentence = False
 
     def buildLogData(self, eventType, value, startTime, timeNeeded, wpm):
-        return {"event_type": eventType, "value": value,
+        return {"pid": 1, "chords": True, "event_type": eventType, "value": value,
                 "start_time": startTime, "time_passed": timeNeeded,
                 "words_per_minute": wpm}
 
@@ -139,7 +139,7 @@ class SuperText(QtWidgets.QTextEdit):
 
 class CSVLogger:
 
-    keys = ["event_type", "value", "start_time",
+     keys = ["pid", "chords", "event_type", "value", "start_time",
             "time_passed", "words_per_minute"]
 
     def __init__(self):
