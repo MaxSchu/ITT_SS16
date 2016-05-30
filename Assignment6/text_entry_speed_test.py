@@ -150,9 +150,11 @@ class CSVLogger:
 def main():
     app = QtWidgets.QApplication(sys.argv)
     logger = CSVLogger()
-    sentences = ["Das ist ein Satz.\n",
-                 "Ich schreibe ein paar Wörter.\n",
-                 "Dieses Programm ist wirklich beeindruckend.\n"
+    sentences = ["Ein Smartphone ist ein Mobiltelefon, das erheblich umfangreichere Funktionalitäten als ein herkömmliches Mobiltelefon zur Verfügung stellt.\n",
+                 "Erste Smartphones vereinigten die Funktionen eines Personal Digital Assistant mit der Funktionalität eines Mobiltelefons.\n",
+                 "Später wurde dem Smartphone die Funktion eines transportablen Medienabspielgerätes und einer Digitalkamera hinzugefügt.\n",
+                 "Ein zentrales Merkmal moderner Smartphones sind berührungsempfindliche Bildschirme.\n"
+                 "Heute sind die meisten verkauften Mobiltelefone Smartphones.\n"
                  ]
     super_text = SuperText(sentences, logger)
     sys.exit(app.exec_())

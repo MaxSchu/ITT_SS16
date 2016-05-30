@@ -1,4 +1,15 @@
-te:test
-ba:baum,bäume
-st:straße
-bi:bier
+sm:smartphone
+mo:mobiltelefon
+fk:funktion,funktionen,funktionalität,funktionalitäten
+pda:personal digital assistant
+dr:der,die,das
+er:er,sie,es
+en:ein,eine,eines,einen
+ic:ich,du
+un:und
+si:sich
+is:ist,sind
+vo:von,vom
+au:auch
+na:nach
+wer:werden
