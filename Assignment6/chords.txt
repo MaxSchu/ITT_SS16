@@ -7,9 +7,14 @@ er:er,sie,es
 en:ein,eine,eines,einen
 ic:ich,du
 un:und
-si:sich
+sc:sich
 is:ist,sind
 vo:von,vom
 au:auch
 na:nach
 wer:werden
+umf:umfangreich,umfangreichere
+mda:medienabspielgerät
+dgk:digitalkamera
+bld:bildschirm,bildschirme
+ze:zentral,zentrales
