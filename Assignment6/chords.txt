@@ -15,6 +15,6 @@ na:nach
 wer:werden
 umf:umfangreich,umfangreichere
 mda:medienabspielgerät
-dgt:digitalkamera
+dgk:digitalkamera
 bld:bildschirm,bildschirme
-zen:zentral,zentrales
+ze:zentral,zentrales
