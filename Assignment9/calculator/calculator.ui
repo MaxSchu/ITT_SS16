@@ -14,19 +14,6 @@
    <string>PyCalculator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTextEdit" name="textScreen">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>391</width>
-      <height>61</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="funcDelete">
     <property name="geometry">
      <rect>
@@ -259,6 +246,16 @@
     </property>
     <property name="text">
      <string>,</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>11</y>
+      <width>381</width>
+      <height>61</height>
+     </rect>
     </property>
    </widget>
   </widget>
