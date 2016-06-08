@@ -12,13 +12,34 @@ class Logger():
         self.lastTimestamp = 0
         self.printHeader()
 
-    def logSomething(self, event):
+    def getWasKeyboard(self):
+        return self.wasKeyboard
+
+    def getTimePassed(self):
+        time_passed = time.time() - self.lastTimestamp
+        self.lastTimestamp = time.time()
+        return time_passed
+
+    def logSomething(self, event, wasKeyboard, operator):
         if self.lastTimestamp == 0:
-            self.lastTimestamp = time
-        print(time.time(), )
+            self.lastTimestamp = time.time()
+
+        # switched hand
+        if self.wasKeyboard != wasKeyboard and wasKeyboard:
+            self.logSwitching("switched to keyboard", wasKeyboard)
+
+        self.wasKeyboard = wasKeyboard
+
+        print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + event +
+              ";" + str(operator) + ";" + self.taskId)
+
+    def logSwitching(self, event, wasKeyboard):
+        print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + event +
+              ";" + "H" + ";" + self.taskId)
+        self.wasKeyboard = wasKeyboard
 
     def printHeader(self):
-        print("timestamp", "time_passed", "device", "event", "operator", "task_id")
+        print("timestamp; time_passed; from_keyboard; event; operator; task_id")
 
 
 class Calculator(QtWidgets.QMainWindow):
@@ -31,8 +52,10 @@ class Calculator(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('calculator.ui', self)
         self.currentValue = 0
         self.previousValue = 0
+        self.suppressLog = False
         self.logger = logger
         self.resetClaculator()
+        self.previouslyClicked = None
         self.setupButtons()
         self.currentOperation = None
 
@@ -50,12 +73,35 @@ class Calculator(QtWidgets.QMainWindow):
         self.OPERATION_SIGNS = {self.Operations.ADD: "+", self.Operations.DIV: "/",
                                 self.Operations.SUB: "-", self.Operations.MUL: "*"}
 
+        self.setMouseTracking(True)
+
+    def setMouseTracking(self, flag):
+        def recursive_set(parent):
+            for child in parent.findChildren(QtCore.QObject):
+                try:
+                    child.setMouseTracking(flag)
+                except:
+                    pass
+                recursive_set(child)
+        QtWidgets.QMainWindow.setMouseTracking(self, flag)
+        recursive_set(self)
+
+    def mouseMoveEvent(self, event):
+        if self.logger.getWasKeyboard():
+            self.logger.logSwitching("switched to mouse", False)
+
+    def keyReleaseEvent(self, e):
+        if e.key() in self.KEY_MAPPING:
+            self.logger.logSomething("KeyReleased: " + str(e.key()), True, "K")
+
     def keyPressEvent(self, e):
+        self.suppressLog = True
         # emit corresponding signals
         try:
             self.KEY_MAPPING[e.key()].clicked.emit()
         except KeyError:
             # Key not mapped - do nothing
+            self.suppressLog = False
             return
 
     def resetClaculator(self):
@@ -64,7 +110,16 @@ class Calculator(QtWidgets.QMainWindow):
         self.ui.textBrowser.setPlainText("0")
 
     def addNumber(self, text):
-        self.logger.logSomething("Clicked: " + text)
+        if not self.suppressLog:
+            if text != self.previouslyClicked:
+                self.logger.logSomething("Mouse Moved", False, "P")
+                self.previouslyClicked = text
+            else:
+                self.logger.logSomething(text, False, "B")
+        else:
+            self.logger.logSomething(text, True, "K")
+            self.suppressLog = False
+
         if self.ui.textBrowser.toPlainText() == "0":
             if text == "0":
                 # value 0 stays 0
@@ -89,6 +144,16 @@ class Calculator(QtWidgets.QMainWindow):
             self.currentValue = float(self.ui.textBrowser.toPlainText()[:-1])
 
     def performOperation(self, op):
+        if not self.suppressLog:
+            if op != self.previouslyClicked:
+                self.logger.logSomething("Mouse Moved", False, "P")
+                self.previouslyClicked = op
+            else:
+                self.logger.logSomething(op, False, "B")
+        else:
+            self.logger.logSomething(op, True, "K")
+            self.suppressLog = False
+
         if op == self.Operations.DEC:
             # avoid multiple decimal points
             if "." not in self.ui.textBrowser.toPlainText():
