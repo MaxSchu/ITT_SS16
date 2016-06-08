@@ -1,0 +1,20 @@
+What does the term "critical path" describe with regard to GOMS?
+
+Critical path is a concept for analyzing the task times of parallel tasks. "When activities occur in parallel,
+one sequence of activities will take more time than parellel sequences of activites." The ciritical path is the
+sequence of activities that takes the longest and it is used to measure the total time for a certain task. In this
+paper this concept is used in combination with the GOMS to predict the performance of a tool for toll and assistance
+operators (TAO). The critical path method is used to measure the total task times of the many parallel activites
+of a TAO. On top of that the paper distinguishes between Cognition Perception an Motor operators and introduced
+the term CPM-GOMS which also includes the Critical Path Method. The CPM-GOMS was able to make very accurate predictions
+about the performance of a tool for TAOs.
+
+Why might the original KLM not perfectly model input performance on a laptop? How could it be adapted?
+
+There are several factors that can differ the original KLM model operator times by Card, Moran, Newell (1980) and
+Kieras (2011) while using a laptop. First a modern laptop uses a different technology for its keyboard. Laptop
+keyboards have much smaller travel times for keypresses and can differ from the original K operator. Often you dont
+even use a real mouse while using a laptop. You just use the touchpad. And obviously the touchpad influences the
+P and B operators times suggested by  Card, Moran, Newell (1980) and Kieras (2011). To adapt the original model
+for the input performance on a laptop, the operator times just have to be measured again while using the typical
+laptop periphery.
