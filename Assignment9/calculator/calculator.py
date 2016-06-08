@@ -1,6 +1,24 @@
 from PyQt5 import uic, QtWidgets, QtCore
 from enum import Enum
 import sys
+import time
+
+
+class Logger():
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.taskId = "currentTask"
+        self.wasKeyboard = False
+        self.lastTimestamp = 0
+        self.printHeader()
+
+    def logSomething(self, event):
+        if self.lastTimestamp == 0:
+            self.lastTimestamp = time
+        print(time.time(), )
+
+    def printHeader(self):
+        print("timestamp", "time_passed", "device", "event", "operator", "task_id")
 
 
 class Calculator(QtWidgets.QMainWindow):
@@ -8,11 +26,12 @@ class Calculator(QtWidgets.QMainWindow):
     class Operations(Enum):
         ADD, SUB, MUL, DIV, REMOVE, CLEAR, EQUALS, DEC = range(8)
 
-    def __init__(self):
+    def __init__(self, logger):
         super(self.__class__, self).__init__()
         self.ui = uic.loadUi('calculator.ui', self)
         self.currentValue = 0
         self.previousValue = 0
+        self.logger = logger
         self.resetClaculator()
         self.setupButtons()
         self.currentOperation = None
@@ -32,7 +51,6 @@ class Calculator(QtWidgets.QMainWindow):
                                 self.Operations.SUB: "-", self.Operations.MUL: "*"}
 
     def keyPressEvent(self, e):
-        print(e.key())
         # emit corresponding signals
         try:
             self.KEY_MAPPING[e.key()].clicked.emit()
@@ -46,6 +64,7 @@ class Calculator(QtWidgets.QMainWindow):
         self.ui.textBrowser.setPlainText("0")
 
     def addNumber(self, text):
+        self.logger.logSomething("Clicked: " + text)
         if self.ui.textBrowser.toPlainText() == "0":
             if text == "0":
                 # value 0 stays 0
@@ -76,6 +95,9 @@ class Calculator(QtWidgets.QMainWindow):
                 self.addNumber(".")
             return
         elif op == self.Operations.CLEAR:
+            self.textBrowser_prev.setPlainText("")
+            self.previousValue = 0
+            self.currentOperation = 0
             self.resetClaculator()
         elif op == self.Operations.REMOVE:
             self.ui.textBrowser.setPlainText(self.ui.textBrowser.toPlainText()[:-1])
@@ -142,7 +164,8 @@ class Calculator(QtWidgets.QMainWindow):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    calculator = Calculator()
+    logger = Logger()
+    calculator = Calculator(logger)
     calculator.show()
     app.exec_()
 
