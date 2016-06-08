@@ -7,7 +7,8 @@ import time
 class Logger():
     def __init__(self):
         super(self.__class__, self).__init__()
-        self.taskId = "currentTask"
+        self.taskId = "5"
+        self.repetition = "4"
         self.wasKeyboard = False
         self.lastTimestamp = 0
         self.printHeader()
@@ -31,17 +32,17 @@ class Logger():
         self.wasKeyboard = wasKeyboard
 
         print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + str(event) +
-              ";" + str(operator) + ";" + self.taskId)
+              ";" + str(operator) + ";" + self.taskId + ";" + self.repetition)
         sys.stdout.flush
 
     def logSwitching(self, event, wasKeyboard):
         print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + str(event) +
-              ";" + "H" + ";" + self.taskId)
+              ";" + "H" + ";" + self.taskId + ";" + self.repetition)
         sys.stdout.flush
         self.wasKeyboard = wasKeyboard
 
     def printHeader(self):
-        print("timestamp; time_passed; from_keyboard; event; operator; task_id")
+        print("timestamp; time_passed; from_keyboard; event; operator; task_id, repetition")
         sys.stdout.flush
 
 
