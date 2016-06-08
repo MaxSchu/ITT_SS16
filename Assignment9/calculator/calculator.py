@@ -30,16 +30,19 @@ class Logger():
 
         self.wasKeyboard = wasKeyboard
 
-        print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + event +
+        print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + str(event) +
               ";" + str(operator) + ";" + self.taskId)
+        sys.stdout.flush
 
     def logSwitching(self, event, wasKeyboard):
-        print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + event +
+        print(str(time.time()) + ";" + str(self.getTimePassed()) + ";" + str(wasKeyboard) + ";" + str(event) +
               ";" + "H" + ";" + self.taskId)
+        sys.stdout.flush
         self.wasKeyboard = wasKeyboard
 
     def printHeader(self):
         print("timestamp; time_passed; from_keyboard; event; operator; task_id")
+        sys.stdout.flush
 
 
 class Calculator(QtWidgets.QMainWindow):
