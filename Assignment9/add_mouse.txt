@@ -1,3 +1,4 @@
+# The button pressed is commented behind the mouse click operation, the whole tasks consists of pointing and clicking tasks
 p
 bb # 1
 p

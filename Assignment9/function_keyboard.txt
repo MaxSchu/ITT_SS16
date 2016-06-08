@@ -1,3 +1,4 @@
+# The pressed key is commented behind the key pressed operation
 h # move hand to keyboard
 k # 3
 k # *

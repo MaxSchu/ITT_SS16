@@ -1,3 +1,4 @@
+# The pressed key is commented behind the key pressed operation
 h # move right hand to keyboard
 k # 1
 k # +
@@ -50,4 +51,4 @@ k # 2
 k # 0
 h # move hand to mouse
 p # point to = button
-bb
+bb # =
