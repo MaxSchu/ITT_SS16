@@ -45,7 +45,7 @@ class Calculator(QtWidgets.QMainWindow):
                             QtCore.Qt.Key_Enter: self.ui.funcCalc, QtCore.Qt.Key_Return: self.ui.funcCalc,
                             QtCore.Qt.Key_Delete: self.ui.funcClear, QtCore.Qt.Key_Plus: self.ui.opAdd,
                             QtCore.Qt.Key_Minus: self.ui.opSub, QtCore.Qt.Key_Slash: self.ui.opDiv,
-                            QtCore.Qt.Key_Asterisk: self.ui.opMul}
+                            QtCore.Qt.Key_Asterisk: self.ui.opMul, QtCore.Qt.Key_Backspace: self.ui.funcBack}
 
         self.OPERATION_SIGNS = {self.Operations.ADD: "+", self.Operations.DIV: "/",
                                 self.Operations.SUB: "-", self.Operations.MUL: "*"}
