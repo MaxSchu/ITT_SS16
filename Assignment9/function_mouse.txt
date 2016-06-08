@@ -7,8 +7,6 @@ bb # 3
 p
 bb # =
 p
-bb # +
-p
 bb # 4
 p
 bb # *
@@ -16,6 +14,14 @@ p
 bb # 4
 p
 bb # =
+p
+bb # 9
+p
+bb # +
+p
+bb # 1
+p
+bb # 6
 p
 bb # *
 p
