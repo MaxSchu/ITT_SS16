@@ -1,0 +1,100 @@
+p
+bb # 1
+p
+bb # +
+p
+bb # 2
+p
+bb # +
+p
+bb # 3
+p
+bb # 4
+p
+bb # +
+p
+bb # 5
+p
+bb # +
+p
+bb # 6
+p
+bb # +
+p
+bb # 7
+p
+bb # +
+p
+bb # 8
+p
+bb # +
+p
+bb # 9
+p
+bb # +
+p
+bb # 1
+p
+bb # 0
+p
+bb # +
+p
+bb # 1
+p
+bb # 1
+p
+bb # +
+p
+bb # 1
+p
+bb # 2
+p
+bb # +
+p
+bb # 1
+p
+bb # 3
+p
+bb # +
+p
+bb # 1
+p
+bb # 4
+p
+bb # +
+p
+bb # 1
+p
+bb # 5
+p
+bb # +
+p
+bb # 1
+p
+bb # 6
+p
+bb # +
+p
+bb # 1
+p
+bb # 7
+p
+bb # +
+p
+bb # 1
+p
+bb # 8
+p
+bb # +
+p
+bb # 1
+p
+bb # 9
+p
+bb # +
+p
+bb # 2
+p
+bb # 0
+p
+bb # =

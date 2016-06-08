@@ -1,0 +1,24 @@
+h # move hand to keyboard
+k # 3
+k # *
+k # 3
+h # move hand to mouse
+p
+bb # =
+h # move hand to keyboard
+k # +
+k # 4
+k # *
+k # 4
+h # move hand to mouse
+p
+bb # =
+h # move hand to keyboard
+k # *
+k # 1
+k # 5
+k # ,
+k # 2
+h # move hand to mouse
+p
+bb # =
