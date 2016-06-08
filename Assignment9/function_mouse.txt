@@ -1,0 +1,30 @@
+p
+bb # 3
+p
+bb # *
+p
+bb # 3
+p
+bb # =
+p
+bb # +
+p
+bb # 4
+p
+bb # *
+p
+bb # 4
+p
+bb # =
+p
+bb # *
+p
+bb # 1
+p
+bb # 5
+p
+bb # ,
+p
+bb # 2
+p
+bb # =

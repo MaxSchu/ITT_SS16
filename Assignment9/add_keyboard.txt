@@ -1,0 +1,53 @@
+h # move right hand to keyboard
+k # 1
+k # +
+k # 2
+k # +
+k # 3
+k # 4
+k # +
+k # 5
+k # +
+k # 6
+k # +
+k # 7
+k # +
+k # 8
+k # +
+k # 9
+k # +
+k # 1
+k # 0
+k # +
+k # 1
+k # 1
+k # +
+k # 1
+k # 2
+k # +
+k # 1
+k # 3
+k # +
+k # 1
+k # 4
+k # +
+k # 1
+k # 5
+k # +
+k # 1
+k # 6
+k # +
+k # 1
+k # 7
+k # +
+k # 1
+k # 8
+k # +
+k # 1
+k # 9
+k # +
+k # 2
+k # 0
+h # move hand to mouse
+p # point to = button
+bb
