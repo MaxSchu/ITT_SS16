@@ -32,7 +32,7 @@ class KLMCalculator():
 
 def main():
     klmDict = {"k": 0.28, "p": 1.1, "b": 0.1, "h": 0.4, "m": 1.2, "w": 0.0}
-    expDict = {"k": 0.28, "p": 1.1, "b": 0.1, "h": 0.4, "m": 1.2, "w": 0.0}
+    expDict = {"k": 0.14, "p": 0.5, "b": 0.11, "h": 0.54, "m": 1.2, "w": 0.0}
 
     klm = KLMCalculator()
     print("Original KLM operators: " + str(klm.calcKLM(klmDict)))
