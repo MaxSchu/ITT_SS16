@@ -8,6 +8,7 @@ class KLMCalculator():
             file = open(sys.argv[1])
             for line in file:
                 line = line.replace("\n", "")
+                line = line.replace(" ", "")
                 line = line.partition('#')[0]
                 line = line.rstrip()
                 time += self.calcKLMForLine(line, dictionary)
@@ -31,9 +32,11 @@ class KLMCalculator():
 
 def main():
     klmDict = {"k": 0.28, "p": 1.1, "b": 0.1, "h": 0.4, "m": 1.2, "w": 0.0}
+    expDict = {"k": 0.28, "p": 1.1, "b": 0.1, "h": 0.4, "m": 1.2, "w": 0.0}
 
     klm = KLMCalculator()
     print("Card, Moran, Newell and Kieras: " + str(klm.calcKLM(klmDict)))
+    print("Own measured klm operators: " + str(klm.calcKLM(expDict)))
 
 
 if __name__ == '__main__':
