@@ -50,7 +50,6 @@ class Level(object):
         if len(btns) == 0:
             return
         for btn in btns:
-            print(btn)
             if btn[1]:
                 if btn[0] == "Up" or btn[0] == "Down":
                     self._x_axis_used = False
@@ -62,25 +61,24 @@ class Level(object):
                     print("Axis changed to X")
 
 
-input("Press the 'sync' button on the back of your Wiimote Plus " +
-      "or buttons (1) and (2) on your classic Wiimote.\n" +
-      "Press <return> once the Wiimote's LEDs start blinking.")
+if __name__ == '__main__':
+    input("Press the 'sync' button on the back of your Wiimote Plus " +
+          "or buttons (1) and (2) on your classic Wiimote.\n" +
+          "Press <return> once the Wiimote's LEDs start blinking.")
 
-if len(sys.argv) == 1:
-    addr, name = wiimote.find()[0]
-elif len(sys.argv) == 2:
-    addr = sys.argv[1]
-    name = None
-elif len(sys.argv) == 3:
-    addr, name = sys.argv[1:3]
+    if len(sys.argv) == 1:
+        addr, name = wiimote.find()[0]
+    elif len(sys.argv) == 2:
+        addr = sys.argv[1]
+        name = None
+    elif len(sys.argv) == 3:
+        addr, name = sys.argv[1:3]
 
+    print(("Connecting to %s (%s)" % (name, addr)))
+    wm = wiimote.connect(addr, name)
+    level = Level(wm)
 
-print(("Connecting to %s (%s)" % (name, addr)))
-wm = wiimote.connect(addr, name)
-level = Level(wm)
-
-
-# this loop prevents the script from finishing
-# is there a better option?
-while True:
-    pass
+    # this loop prevents the script from finishing
+    # is there a better option?
+    while True:
+        pass
