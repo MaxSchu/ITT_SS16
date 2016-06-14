@@ -71,7 +71,7 @@ class WiimoteNode(Node):
         self.layout.addWidget(label)
         
         self.text = QtGui.QLineEdit()
-        self.btaddr = "b8:ae:6e:18:5d:ab" # set some example
+        self.btaddr = "b8:ae:6e:1b:ad:a0" # set some example
         self.text.setText(self.btaddr)
         self.layout.addWidget(self.text)
         
@@ -162,15 +162,40 @@ if __name__ == '__main__':
     pw1 = pg.PlotWidget()
     layout.addWidget(pw1, 0, 1)
     pw1.setYRange(0,1024)
+    pw2 = pg.PlotWidget()
+    layout.addWidget(pw2, 1, 1)
+    pw2.setYRange(0,1024)
+    pw3 = pg.PlotWidget()
+    layout.addWidget(pw3, 2, 1)
+    pw3.setYRange(0,1024)
+    pw4 = pg.PlotWidget()
+    layout.addWidget(pw4, 3, 1)
+    pw4.setYRange(0,1024)
+
 
     pw1Node = fc.createNode('PlotWidget', pos=(0, -150))
     pw1Node.setPlot(pw1)
+    pw2Node = fc.createNode('PlotWidget', pos=(0, -300))
+    pw2Node.setPlot(pw2)
+    pw3Node = fc.createNode('PlotWidget', pos=(0, -450))
+    pw3Node.setPlot(pw3)
+    pw4Node = fc.createNode('PlotWidget', pos=(0, -600))
+    pw4Node.setPlot(pw4)
 
     wiimoteNode = fc.createNode('Wiimote', pos=(0, 0), )
-    bufferNode = fc.createNode('Buffer', pos=(150, 0))
+    bufferNodeX = fc.createNode('Buffer', pos=(150, 0))
+    bufferNodeY = fc.createNode('Buffer', pos=(150, -150))
+    bufferNodeZ = fc.createNode('Buffer', pos=(150, -300))
+    filterNode = fc.createNode('MeanFilter', pos=(150, -450))
 
-    fc.connectTerminals(wiimoteNode['accelX'], bufferNode['dataIn'])
-    fc.connectTerminals(bufferNode['dataOut'], pw1Node['In'])
+    fc.connectTerminals(wiimoteNode['accelX'], bufferNodeX['dataIn'])
+    fc.connectTerminals(wiimoteNode['accelY'], bufferNodeY['dataIn'])
+    fc.connectTerminals(wiimoteNode['accelZ'], bufferNodeZ['dataIn'])
+    fc.connectTerminals(bufferNodeX['dataOut'], filterNode['In'])
+    fc.connectTerminals(bufferNodeX['dataOut'], pw1Node['In'])
+    fc.connectTerminals(bufferNodeY['dataOut'], pw2Node['In'])
+    fc.connectTerminals(bufferNodeZ['dataOut'], pw3Node['In'])
+    fc.connectTerminals(filterNode['Out'], pw4Node['In'])
 
     win.show()
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
