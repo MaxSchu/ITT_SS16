@@ -17,7 +17,7 @@ if __name__ == '__main__':
     import sys
     app = QtGui.QApplication([])
     win = QtGui.QMainWindow()
-    win.setWindowTitle('WiimoteNode demo')
+    win.setWindowTitle('My Flowchart demo')
     cw = QtGui.QWidget()
     win.setCentralWidget(cw)
     layout = QtGui.QGridLayout()
@@ -45,8 +45,10 @@ if __name__ == '__main__':
     pw3 = pg.PlotWidget()
     layout.addWidget(pw3, 2, 1)
     pw3.setYRange(0,1024)
-    pw3Node = fc.createNode('PlotWidget', pos=(150, 300))
+    pw3Node = fc.createNode('PlotWidget', pos=(300, 300))
     pw3Node.setPlot(pw3)
+
+    filterNode = fc.createNode('MedianFilter', pos=(150, 300))
 
     wiimoteNode = fc.createNode('Wiimote', pos=(0, 0), )
     bufferNodeX = fc.createNode('Buffer', pos=(-150, 150))
@@ -58,7 +60,8 @@ if __name__ == '__main__':
     fc.connectTerminals(wiimoteNode['accelZ'], bufferNodeZ['dataIn'])
     fc.connectTerminals(bufferNodeX['dataOut'], pw1Node['In'])
     fc.connectTerminals(bufferNodeY['dataOut'], pw2Node['In'])
-    fc.connectTerminals(bufferNodeZ['dataOut'], pw3Node['In'])
+    fc.connectTerminals(bufferNodeZ['dataOut'], filterNode['In'])
+    fc.connectTerminals(filterNode['Out'], pw3Node['In'])
 
     win.show()
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
