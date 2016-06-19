@@ -11,6 +11,8 @@ import numpy as np
 
 import wiimote
 
+btaddr = None
+
 
 class BufferNode(CtrlNode):
     """
@@ -70,10 +72,7 @@ class WiimoteNode(Node):
 
         label = QtGui.QLabel("Bluetooth MAC address:")
         self.layout.addWidget(label)
-
         self.text = QtGui.QLineEdit()
-        self.btaddr = "B8:AE:6E:EF:D2:D0"  # set some example
-        self.text.setText(self.btaddr)
         self.layout.addWidget(self.text)
 
         label2 = QtGui.QLabel("Update rate (Hz)")
@@ -97,6 +96,14 @@ class WiimoteNode(Node):
 
         # super()
         Node.__init__(self, name, terminals=terminals)
+
+        try:
+            self.btaddr = sys.argv[1]  # set given value
+            self.text.setText(self.btaddr)
+            self.connect_wiimote()
+        except IndexError:
+            self.btaddr = "B8:AE:6E:EF:D2:D0"  # set some example
+            self.text.setText(self.btaddr)
 
     def update_all_sensors(self):
         if self.wiimote is None:
@@ -144,6 +151,7 @@ fclib.registerNodeType(WiimoteNode, [('Sensor',)])
 
 if __name__ == '__main__':
     import sys
+
     app = QtGui.QApplication([])
     win = QtGui.QMainWindow()
     win.setWindowTitle('WiimoteNode demo')
@@ -181,7 +189,7 @@ if __name__ == '__main__':
     pw4Node = fc.createNode('PlotWidget', pos=(0, -600))
     pw4Node.setPlot(pw4)
 
-    wiimoteNode = fc.createNode('Wiimote', pos=(0, 0), )
+    wiimoteNode = fc.createNode('Wiimote', pos=(0, 0))
     bufferNodeX = fc.createNode('Buffer', pos=(150, 0))
     bufferNodeY = fc.createNode('Buffer', pos=(150, -150))
     bufferNodeZ = fc.createNode('Buffer', pos=(150, -300))
