@@ -14,7 +14,8 @@ if len(sys.argv) == 2:
 else:
     sys.exit("Please enter your Wiimote's MAC-adress as first parameter.")
 
-patterns = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0]]
+patterns = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [
+    0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]]
 for i in range(5):
     for p in patterns:
         wm.leds = p
@@ -30,7 +31,8 @@ def print_acc(acc_data):
     y = wm.accelerometer[1]
     cur_axis = 0
     neutral_pos = 512
-    level_patterns = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[1,1,1,1],[0,1,1,1],[0,0,1,1],[0,0,0,1]]
+    level_patterns = [[1, 0, 0, 0], [1, 1, 0, 0], [1, 1, 1, 0], [
+        1, 1, 1, 1], [0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1]]
     if axis == "X":
         cur_axis = x
     elif axis == "Y":
