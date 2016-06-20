@@ -9,10 +9,12 @@ from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph import Vector
 import pyqtgraph as pg
 import numpy as np
+import math as math
 
 import wiimote
 
 btaddr = None
+
 
 class NormalVectorNode(CtrlNode):
     """
@@ -20,33 +22,37 @@ class NormalVectorNode(CtrlNode):
     other two axes and outputs a vector (i.e., two 2D points) that can be plotted 
     by a PlotWidget to indicate the rotation
     """
-    
+
     nodeName = "NormalVector"
-    
+    uiTemplate = [
+        ('size', 'spin', {'value': 32.0, 'step': 1.0, 'range': [0.0, 128.0]}),
+    ]
+
     def __init__(self, name):
         terminals = {
-            'xDataIn': dict(io='in'),
-            'yDataIn': dict(io='in'),
-            'zDataIn': dict(io='in'),
-            'dataOut': dict(io='out'),
+            'xIn': dict(io='in'),
+            'zIn': dict(io='in'),
+            'xOut': dict(io='out'),
+            'yOut': dict(io='out'),
         }
         self._normalVector = np.array([])
+        self._offset = 512
         CtrlNode.__init__(self, name, terminals=terminals)
 
     def process(self, **kwds):
         """
         Calculation here; returns a vector as output
         """
-        size = int(self.ctrls['size'].value())
-        #self._normalVector = np.append(self._normalVector, kwds['dataIn'])
-        #self._normalVector = self._normalVector[-size:]
-        x = 0 # calculate from input values
-        y = 0 # calculate from input values
-        self._normalVector = [x,y]
-        output = self._normalVector
-        return {'dataOut': output}
+        centeredZ = kwds['zIn'] - self._offset
+        centeredX = kwds['xIn'] - self._offset
+
+        angle = math.atan2(centeredZ, centeredX)
+        xValues = np.array([1, math.cos(angle) + 1])
+        yValues = np.array([0, math.sin(angle)])
+        return {'xOut': xValues, 'yOut': yValues}
 
 fclib.registerNodeType(NormalVectorNode, [('Data',)])
+
 
 class BufferNode(CtrlNode):
     """
@@ -213,6 +219,10 @@ if __name__ == '__main__':
     pw4 = pg.PlotWidget()
     layout.addWidget(pw4, 3, 1)
     pw4.setYRange(0, 1024)
+    pw5 = pg.PlotWidget()
+    layout.addWidget(pw5, 4, 1)
+    pw5.setYRange(-1, 1)
+    pw5.setXRange(0, 2)
 
     pw1Node = fc.createNode('PlotWidget', pos=(0, -150))
     pw1Node.setPlot(pw1)
@@ -222,21 +232,30 @@ if __name__ == '__main__':
     pw3Node.setPlot(pw3)
     pw4Node = fc.createNode('PlotWidget', pos=(0, -600))
     pw4Node.setPlot(pw4)
+    pw5Node = fc.createNode('PlotWidget', pos=(0, -750))
+    pw5Node.setPlot(pw5)
 
     wiimoteNode = fc.createNode('Wiimote', pos=(0, 0))
     bufferNodeX = fc.createNode('Buffer', pos=(150, 0))
     bufferNodeY = fc.createNode('Buffer', pos=(150, -150))
     bufferNodeZ = fc.createNode('Buffer', pos=(150, -300))
     filterNode = fc.createNode('MeanFilter', pos=(150, -450))
+    normalVectorNode = fc.createNode('NormalVector', pos=(150, -300))
+    curveNode = fc.createNode('PlotCurve', pos=(300, -300))
 
     fc.connectTerminals(wiimoteNode['accelX'], bufferNodeX['dataIn'])
     fc.connectTerminals(wiimoteNode['accelY'], bufferNodeY['dataIn'])
     fc.connectTerminals(wiimoteNode['accelZ'], bufferNodeZ['dataIn'])
+    fc.connectTerminals(wiimoteNode['accelX'], normalVectorNode['xIn'])
+    fc.connectTerminals(wiimoteNode['accelZ'], normalVectorNode['zIn'])
+    fc.connectTerminals(normalVectorNode['xOut'], curveNode['x'])
+    fc.connectTerminals(normalVectorNode['yOut'], curveNode['y'])
     fc.connectTerminals(bufferNodeX['dataOut'], filterNode['In'])
     fc.connectTerminals(bufferNodeX['dataOut'], pw1Node['In'])
     fc.connectTerminals(bufferNodeY['dataOut'], pw2Node['In'])
     fc.connectTerminals(bufferNodeZ['dataOut'], pw3Node['In'])
     fc.connectTerminals(filterNode['Out'], pw4Node['In'])
+    fc.connectTerminals(curveNode['plot'], pw5Node['In'])
 
     win.show()
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
