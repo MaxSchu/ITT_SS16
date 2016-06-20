@@ -6,6 +6,7 @@ from pyqtgraph.flowchart import Flowchart, Node
 from pyqtgraph.flowchart.library.common import CtrlNode
 import pyqtgraph.flowchart.library as fclib
 from pyqtgraph.Qt import QtGui, QtCore
+from pyqtgraph import Vector
 import pyqtgraph as pg
 import numpy as np
 
@@ -13,6 +14,39 @@ import wiimote
 
 btaddr = None
 
+class NormalVectorNode(CtrlNode):
+    """
+    Calculates the rotation around one axis from the accelerometer values of the
+    other two axes and outputs a vector (i.e., two 2D points) that can be plotted 
+    by a PlotWidget to indicate the rotation
+    """
+    
+    nodeName = "NormalVector"
+    
+    def __init__(self, name):
+        terminals = {
+            'xDataIn': dict(io='in'),
+            'yDataIn': dict(io='in'),
+            'zDataIn': dict(io='in'),
+            'dataOut': dict(io='out'),
+        }
+        self._normalVector = np.array([])
+        CtrlNode.__init__(self, name, terminals=terminals)
+
+    def process(self, **kwds):
+        """
+        Calculation here; returns a vector as output
+        """
+        size = int(self.ctrls['size'].value())
+        #self._normalVector = np.append(self._normalVector, kwds['dataIn'])
+        #self._normalVector = self._normalVector[-size:]
+        x = 0 # calculate from input values
+        y = 0 # calculate from input values
+        self._normalVector = [x,y]
+        output = self._normalVector
+        return {'dataOut': output}
+
+fclib.registerNodeType(NormalVectorNode, [('Data',)])
 
 class BufferNode(CtrlNode):
     """
