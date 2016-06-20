@@ -13,10 +13,9 @@ if len(sys.argv) == 2:
     wm = wiimote.connect(addr, name)
 else:
     sys.exit("Please enter your Wiimote's MAC-adress as first parameter.")
-    
-    
 
-patterns = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0]]
+patterns = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [
+    0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]]
 for i in range(5):
     for p in patterns:
         wm.leds = p
@@ -25,13 +24,15 @@ for i in range(5):
 level = 0
 axis = "X"
 
+
 def print_acc(acc_data):
     global level
     x = wm.accelerometer[0]
     y = wm.accelerometer[1]
     cur_axis = 0
     neutral_pos = 512
-    level_patterns = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[1,1,1,1],[0,1,1,1],[0,0,1,1],[0,0,0,1]]
+    level_patterns = [[1, 0, 0, 0], [1, 1, 0, 0], [1, 1, 1, 0], [
+        1, 1, 1, 1], [0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1]]
     if axis == "X":
         cur_axis = x
     elif axis == "Y":
@@ -46,7 +47,7 @@ def print_acc(acc_data):
     elif cur_axis <= 482:
         level = 0
         wm.leds = level_patterns[0]
-    elif 482< cur_axis <= 492:
+    elif 482 < cur_axis <= 492:
         level = 0
         wm.leds = level_patterns[1]
     elif 492 < cur_axis <= 502:
@@ -74,4 +75,3 @@ while True:
     else:
         pass
     time.sleep(0.05)
-

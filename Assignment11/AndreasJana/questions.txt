@@ -1,0 +1,5 @@
+1. Random noise is high frequency noise which interferes with a signal and is mostly caused by environmental influences or disturbances. 
+
+2. A low-pass filter removes high frequency components - like random noise - from a signal so only the low frequency parts can pass through.
+
+3. A moving average filter is a low-pass filter because it sets the values in a signal to the average of a specific amount of surrounding samples of the respective value. This diminishes high frequency parts in the signal.

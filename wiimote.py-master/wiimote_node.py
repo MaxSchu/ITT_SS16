@@ -143,6 +143,16 @@ class WiimoteNode(Node):
 fclib.registerNodeType(WiimoteNode, [('Sensor',)])
     
 if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        input("Press the 'sync' button on the back of your Wiimote Plus.\n" +
+              "Press <return> once the Wiimote's LEDs start blinking.")
+        addr = sys.argv[1]
+        name = None
+            print(("Connecting to %s (%s)" % (name, addr)))
+        wm = wiimote.connect(addr, name)
+    else:
+        sys.exit("Please enter your Wiimote's MAC-adress as first parameter.")
+
     import sys
     app = QtGui.QApplication([])
     win = QtGui.QMainWindow()
