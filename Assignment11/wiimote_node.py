@@ -40,7 +40,7 @@ class BufferNode(CtrlNode):
         return {'dataOut': output}
 
 fclib.registerNodeType(BufferNode, [('Data',)])
-        
+
 class WiimoteNode(Node):
     """
     Outputs sensor data from a Wiimote.
@@ -71,7 +71,7 @@ class WiimoteNode(Node):
         self.layout.addWidget(label)
         
         self.text = QtGui.QLineEdit()
-        self.btaddr = "b8:ae:6e:18:5d:ab" # set some example
+        self.btaddr = "b8:ae:6e:50:05:32" # set some example
         self.text.setText(self.btaddr)
         self.layout.addWidget(self.text)
         
@@ -148,7 +148,7 @@ if __name__ == '__main__':
               "Press <return> once the Wiimote's LEDs start blinking.")
         addr = sys.argv[1]
         name = None
-            print(("Connecting to %s (%s)" % (name, addr)))
+        print(("Connecting to %s (%s)" % (name, addr)))
         wm = wiimote.connect(addr, name)
     else:
         sys.exit("Please enter your Wiimote's MAC-adress as first parameter.")
