@@ -60,7 +60,7 @@ class DataSet():
 
     def calculateFFT(self, index):
         """Calculate the FFT from the raw recorded accelerometer data.
-        The index indicates the axis. """
+        Index indicates the axis. """
 
         values = []
         for n in self.rawData:
@@ -70,7 +70,7 @@ class DataSet():
 
     def calculateSTD(self, index):
         """Calculate the standard deviation from the raw recorded accelerometer data.
-        The index indicates the axis. """
+        Index indicates the axis. """
 
         values = []
         for n in self.rawData:
@@ -80,7 +80,7 @@ class DataSet():
 
     def calculateMean(self, index):
         """Calculate the mean from the raw recorded accelerometer data.
-        The index indicates the axis. """
+        Index indicates the axis. """
 
         values = []
         for n in self.rawData:
@@ -254,13 +254,13 @@ class MainApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.wm = None
-        self.ui = uic.loadUi('mainwindow.ui', self)
-        self.listView = self.ui.listView
         self.gestures = []
         self.classifier = svm.SVC()
+        self.ui = uic.loadUi('mainwindow.ui', self)
+        self.listView = self.ui.listView
         self.listModel = QtGui.QStandardItemModel(self.listView)
-        self.listView.setModel(self.listModel)
         self.interactionButtons = self.getInteractionButtons()
+        self.listView.setModel(self.listModel)
         self.setupButtons()
 
     def closeEvent(self, event):
@@ -312,11 +312,16 @@ class MainApp(QtWidgets.QMainWindow):
         self.listModel.appendRow(newItem)
 
     def removeGesture(self):
-        QtWidgets.QMessageBox.warning(
-            self, "Warning", "Select at least one gesture to remove.")
-        print(self.listModel.item(
-            self.listView.selectedIndexes()[0].row()).text())
-        # TODO: remove gesture
+        if len(self.listView.selectedIndexes()) < 1:
+            QtWidgets.QMessageBox.warning(
+                self, "Warning", "Select at least one gesture to remove.")
+            return
+        else:
+            for i in self.listView.selectedIndexes():
+                item = self.listModel.item(i)
+                self.gestures.pop(item.row)
+                self.listModel.removeRow(item.row())
+            # TODO: remove gesture
 
     def detectGesture(self):
         self.ui.setEnabled(False)
@@ -324,9 +329,12 @@ class MainApp(QtWidgets.QMainWindow):
         popup.show()
 
     def editGesture(self):
-        QtWidgets.QMessageBox.warning(
-            self, "Warning", "Select exactly one gesture to edit.")
-        # TODO: edit gestures
+        if len(self.listView.selectedIndexes()) != 1:
+            QtWidgets.QMessageBox.warning(
+                self, "Warning", "Select exactly one gesture to edit.")
+        else:
+            pass
+            # TODO: edit gestures
 
     def connectWiiMote(self):
         """Connect to WiiMote via Bluetooth"""
