@@ -1,0 +1,14 @@
+1) How is the XWand tracked?
+
+The 3D-orientation of the XWand is tracked by a combination of data provided by the magnetometer and the accelerometer. The accelerometer data are used to determine pitch and roll and together with the magnetometer data the yaw is calculated. 
+The 3D-position on the other hand can be determined using a computer vision technique that is accurate up to one or two inches. Therefore the 2D-position of the device's flashing IR LED are searched for by two video cameras trained on the room which in combination can be used to triangulate and thus find the 3D-position of the control.
+ 
+2) How are gestures recognized?
+
+The XWand can recognize very simple gestures that are based on peaks in values provided by the various sensors, like a fast pitching up of the wand which leads to a peak in the accelerometer data. Additionally these simple gestures are combined with strong context model which only recognizes a gesture when the wand is pointing at a certain device and the device can react to the performed gesture. Also the user is required to press the button while a gesture is performed.
+
+3) What are the technical differences between the XWand and the WiiMote?
+
+Both devices share accelerometers and gyroscopes. The WiiMote Plus though also includes an IR sensor and an optical sensor, as well as a bluetooth connector, a 16KiB chip, a rumble motor, speakers and four LEDs. The XWand on the other hand has only two LEDs plus one IR LED. Also a magnetometer, a FM transceiver and a microcontroller are built in. 
+Another difference is that the WiiMote has 8 buttons plus a D-pad whereas the XWand only has one button. 
+Both devices get their power from batteries, the WiiMote from two AAs, the XWand from four AAAs.
