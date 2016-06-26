@@ -17,28 +17,6 @@
    <enum>QTabWidget::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="editButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>100</y>
-      <width>41</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit gesture&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset theme="window-new"/>
-    </property>
-   </widget>
    <widget class="QPushButton" name="addButton">
     <property name="enabled">
      <bool>false</bool>
@@ -93,7 +71,8 @@
      <string>-</string>
     </property>
     <property name="icon">
-     <iconset theme="window-new"/>
+     <iconset theme="window-new">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QListView" name="listView">

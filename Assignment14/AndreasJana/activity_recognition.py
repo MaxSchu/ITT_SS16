@@ -105,6 +105,9 @@ class Gesture():
     def getID(self):
         return self.gestureId
 
+    def setID(self, gID):
+        self.gestureId = gID
+
     def getData(self):
         data = []
         for n in self.dataSets:
@@ -137,7 +140,7 @@ class RecordingPopup(QtWidgets.QMainWindow):
         self.dataSets = []
         self.ui.exampleCounter.setText(
             "Recorded examples: " +
-            str(len(self.recordedPattern)))
+            str(len(self.dataSets)))
 
     def saveData(self):
         if len(self.dataSets) > 0:
@@ -270,23 +273,25 @@ class MainApp(QtWidgets.QMainWindow):
     def getInteractionButtons(self):
         ui = self.ui
         return [ui.addButton, ui.deleteButton, ui.detectButton,
-                ui.editButton, ui.listView]
+                ui.listView]
 
     def setupButtons(self):
         # connect clicked signals to methods
         self.ui.addButton.clicked.connect(self.openGestureEditor)
         self.ui.deleteButton.clicked.connect(self.removeGesture)
-        self.ui.editButton.clicked.connect(self.editGesture)
         self.ui.detectButton.clicked.connect(self.detectGesture)
         self.ui.connectionButton.clicked.connect(self.connectWiiMote)
 
     def addGesture(self, gesture):
         self.gestures.append(gesture)
-        if (len(self.gestures)) > 1:
-            self.trainSVM()
+        self.trainSVM()
 
     def trainSVM(self):
         """Train the SVM classifier with all recorded gestures"""
+
+        if len(self.gestures) < 2:
+            # need at least 2 gestures
+            return
 
         trainingData = []
         gestureID = []
@@ -312,32 +317,25 @@ class MainApp(QtWidgets.QMainWindow):
         self.listModel.appendRow(newItem)
 
     def removeGesture(self):
-        if len(self.listView.selectedIndexes()) < 1:
+        if len(self.listView.selectedIndexes()) != 1:
             QtWidgets.QMessageBox.warning(
-                self, "Warning", "Select at least one gesture to remove.")
+                self, "Warning", "Select one gesture to remove.")
             return
         else:
-            for i in self.listView.selectedIndexes():
-                item = self.listModel.item(i)
-                self.gestures.pop(item.row)
-                self.listModel.removeRow(item.row())
-            # TODO: remove gesture
+            i = self.listView.selectedIndexes()[0]
+            self.gestures.pop(i.row())
+            self.listModel.removeRow(i.row())
+            for x in range(i.row(), len(self.gestures)):
+                self.gestures[x].setID(self.gestures[x].getID() - 1)
+            self.trainSVM()
 
     def detectGesture(self):
         self.ui.setEnabled(False)
         popup = DetectionPopup(self, self.classifier)
         popup.show()
 
-    def editGesture(self):
-        if len(self.listView.selectedIndexes()) != 1:
-            QtWidgets.QMessageBox.warning(
-                self, "Warning", "Select exactly one gesture to edit.")
-        else:
-            pass
-            # TODO: edit gestures
-
     def connectWiiMote(self):
-        """Connect to WiiMote via Bluetooth"""
+        """Connect to WiiMote via Bluetooth."""
 
         try:
             self.wm = wiimote.connect(self.ui.btAddressInput.text())
