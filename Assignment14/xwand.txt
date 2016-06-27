@@ -1,0 +1,13 @@
+How is the XWand tracked (provide all relevant details)?
+The Wand’s orientation is tracked using sensor data from an accelerometer and a magnetometer. The magnetometer senses the orientation of its three orthogonal axes along the Earth’s magnetic field. To get the full 3D orientation of the wand the data from the magnetometer has to be combined with those from the accelerometer. The pitch and roll is determined by the accelerometer data and then used together with the magnetometer data to calculate the yaw. The pitch and roll data from the accelerometer are only accurate if the wand is motionless. Motion on the yaw axis can be also be sensed by the built in gyroscope.
+The position of the wand is tracked by two video cameras positioned in the room. Both of them are capable to find the 2D position of the wand via a flashing infrared LED on the wand. The 3D position is then triangulated from the two 2D position.
+
+
+How are gestures recognized?
+Gestures are recognised by monitoring the wand’s sensor data for peaks. For example a peak in the pitch value of the accelerometer would represent a pitching up motion of the wand. To reduce the risk of false positives the gesture interaction is context bound meaning that the system only acts on the gesture recognition results if the wand is pointed at a registered device and the wand button is pressed while gesturing. This button press also provides a good method of determining the start of a gesture.
+
+
+What are the technical differences between the XWand and the WiiMote?
+The XWand and the WiiMote share the accelerometer and the WiiMote Plus also has a gyroscope built in like the XWand. The WiiMote however lacks the magnetometer which plays a key part in determining the XWand’s orientation as described above.
+Another difference is that the WiiMote has a IR sensor and relies on a sensor bar with 10 IR LEDs positioned in the room while the XWand has a IR LED and relies on two IR cameras positioned in the room.
+Furthermore the XWand only has a single button and uses four AAA batteries instead of the two AA of the WiiMote.
