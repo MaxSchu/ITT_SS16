@@ -28,12 +28,13 @@ class NormalVectorNode(Node):
         Node.__init__(self, name, terminals=terminals)
 
     def process(self, **kwds):
+        #reduce sensor default values to 0 and calculate angle
         angle = np.arctan2(kwds['Znormal'] - 512, kwds['Xnormal'] - 512)
         return {'VectorX': np.array([0, np.cos(angle)]), 'VectorY': np.array([0, np.sin(angle)])}
 fclib.registerNodeType(NormalVectorNode, [('NormalVector',)])
 
 
-def setupFlowChart(layout, fc):
+def setupFlowChart(layout, fc, wiimoteNode):
     pw1 = pg.PlotWidget()
     layout.addWidget(pw1, 0, 1)
     pw1.setYRange(0, 1024)
@@ -53,10 +54,6 @@ def setupFlowChart(layout, fc):
     pw3Node.setPlot(pw3)
 
     filterNode = fc.createNode('MedianFilter', pos=(150, 300))
-
-    wiimoteNode = fc.createNode('Wiimote', pos=(0, 0), )
-    initWiiMote(wiimoteNode)
-
     bufferNodeX = fc.createNode('Buffer', pos=(-150, 150))
     bufferNodeY = fc.createNode('Buffer', pos=(0, 150))
     bufferNodeZ = fc.createNode('Buffer', pos=(150, 150))
@@ -77,9 +74,7 @@ def initWiiMote(wiimoteNode):
         wiimoteNode.btaddr = "b8:ae:6e:50:05:32"
 
 
-def setupRotationPlot(layout, fc):
-    wiimoteNode = fc.createNode('Wiimote', pos=(-150, 450))
-    initWiiMote(wiimoteNode)
+def setupRotationPlot(layout, fc, wiimoteNode):
     normalNode = fc.createNode('NormalVector', pos=(0, 450))
     plotCurve = fc.createNode('PlotCurve', pos=(150, 450))
 
@@ -100,7 +95,7 @@ def setupRotationPlot(layout, fc):
 if __name__ == '__main__':
     app = QtGui.QApplication([])
     win = QtGui.QMainWindow()
-    win.setWindowTitle('My Flowchart demo')
+    win.setWindowTitle('WiiMote Sensor Analyzer')
     cw = QtGui.QWidget()
     win.setCentralWidget(cw)
     layout = QtGui.QGridLayout()
@@ -111,8 +106,10 @@ if __name__ == '__main__':
     })
     w = fc.widget()
     layout.addWidget(fc.widget(), 0, 0, 2, 1)
-    setupFlowChart(layout, fc)
-    setupRotationPlot(layout, fc)
+    wiimoteNode = fc.createNode('Wiimote', pos=(0, 0), )
+    initWiiMote(wiimoteNode)
+    setupFlowChart(layout, fc, wiimoteNode)
+    setupRotationPlot(layout, fc, wiimoteNode)
 
     win.show()
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
