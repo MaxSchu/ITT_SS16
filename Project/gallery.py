@@ -9,24 +9,37 @@ from activity_recognition import GestureRecognizer
 
 class Gallery(QtWidgets.QMainWindow):
     
-    def __init__(self):
+    def __init__(self, width, height):
         super(self.__class__, self).__init__()
-        self.setGeometry(0, 0, 600, 600)
-        filenames = glob.glob('*.png')
+        # fix for hidden lower bar
+        height -= 30
+        self.setGeometry(0, 0, width, height)
+        self.thumbnailHeight = height / 6
+        self.thumbnailWidth = self.thumbnailHeight
+        self.heightPadding = height / 6
+        self.imageHeight = height / 6 * 5
+        self.imageWidth = width / 10 * 9
         self.currentIndex = 0
         self.image = QtWidgets.QLabel(self)
+        self.image.setGeometry(0, 0, width, self.imageHeight)
         self.image.setAlignment(QtCore.Qt.AlignCenter)
-        self.image.setGeometry(100, 50, 400, 400)
         self.thumbnails = []
+        self.maxCount = width / self.thumbnailWidth
+        self.filenames = glob.glob('*.png')[:int(self.maxCount)]
+        print(width, height, self.thumbnailWidth, self.thumbnailHeight, self.imageHeight, int(self.maxCount))
         self.count = 0
-        for filename in filenames[:6]:
+        for filename in self.filenames:
             if self.count == 0:
-                self.image.setPixmap(QtGui.QPixmap((filename)).scaledToHeight(400))
+                pixmap = QtGui.QPixmap(filename)
+                pixmap = pixmap.scaled(self.imageWidth, self.imageHeight-self.heightPadding, QtCore.Qt.KeepAspectRatio)
+                self.image.setPixmap(pixmap)
             self.thumbnails.append(QtWidgets.QLabel(self))
             self.thumbnails[self.count].setAlignment(QtCore.Qt.AlignCenter)
-            self.thumbnails[self.count].setGeometry(self.count*100, 500, 100, 100)
+            self.thumbnails[self.count].setGeometry(self.count*self.thumbnailWidth, self.imageHeight, self.thumbnailWidth, self.thumbnailHeight)
             #use full ABSOLUTE path to the image, not relative
-            self.thumbnails[self.count].setPixmap(QtGui.QPixmap((filename)).scaledToHeight(100))
+            pixmap = QtGui.QPixmap(filename)
+            pixmap = pixmap.scaled(self.thumbnailWidth, self.thumbnailHeight, QtCore.Qt.KeepAspectRatio)
+            self.thumbnails[self.count].setPixmap(pixmap)
             self.count += 1
         
 
@@ -38,17 +51,22 @@ class Gallery(QtWidgets.QMainWindow):
         if (str(action) == "swipeleft"):
             if self.currentIndex < self.count - 1:
                 self.currentIndex += 1
-                self.image.setPixmap(self.thumbnails[self.currentIndex].pixmap().scaledToHeight(400))
+                pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
+                pixmap = pixmap.scaled(self.imageWidth, self.imageHeight-self.heightPadding, QtCore.Qt.KeepAspectRatio)
+                self.image.setPixmap(pixmap)
             else:
                 print("Max index reached")
         elif(str(action) == "swiperight"):
             if self.currentIndex > 0:
                 self.currentIndex -= 1
-                self.image.setPixmap(self.thumbnails[self.currentIndex].pixmap().scaledToHeight(400))
+                pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
+                pixmap = pixmap.scaled(self.imageWidth, self.imageHeight-self.heightPadding, QtCore.Qt.KeepAspectRatio)
+                self.image.setPixmap(pixmap)
             else:
                 print("Minimum index reached")
 
 app = QtWidgets.QApplication(sys.argv)
-gallery = Gallery()
+screen = QtWidgets.QDesktopWidget().availableGeometry()
+gallery = Gallery(screen.width(), screen.height())
 gallery.show()
 sys.exit(app.exec_())
