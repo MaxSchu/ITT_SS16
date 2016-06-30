@@ -14,8 +14,10 @@ class GestureRecognizer(QtWidgets.QWidget):
         self.setMouseTracking(True) # only get events when button is pressed
         self.initUI()
 
-    def initUI(self):      
-        self.text = "Please click on the target"
+    def initUI(self): 
+        palette = QtGui.QPalette()     
+        palette.setColor(QtGui.QPalette.Foreground, QtCore.Qt.red)
+        self.text = "Press N to add a new gesture; press R to recognize your gesture"
         self.setWindowTitle('Drawable')
         self.show()
 
@@ -44,6 +46,10 @@ class GestureRecognizer(QtWidgets.QWidget):
 
     def keyPressEvent(self, ev):
         if ev.text() == 'n':
+            self.points = self.resample(self.points)
+            self.points = self.rotateBy(self.points)
+            self.points = self.scaleTo(self.points)
+            self.points = self.translateToCenter(self.points)
             self.addGesture(self.points, len(self.uniStrokes))
         elif ev.text() == 'r':
             self.recognize(self.points)
@@ -59,9 +65,15 @@ class GestureRecognizer(QtWidgets.QWidget):
         qp.setBrush(QtGui.QColor(20, 255, 190))
         qp.setPen(QtGui.QColor(0, 155, 0))
         qp.drawPolyline(self.poly(self.points))
+        self.drawText(ev, qp)
         for point in self.points:
             qp.drawEllipse(point[0]-1, point[1] - 1, 2, 2)
         qp.end()
+
+    def drawText(self, ev, qp):
+        qp.setPen(QtGui.QColor(0, 155, 0))
+        qp.setFont(QtGui.QFont('Decorative', 20))
+        qp.drawText(ev.rect(), QtCore.Qt.AlignTop, self.text)
      
     def distance(self, p1,p2):
         dx = p1[0] - p2[0]
