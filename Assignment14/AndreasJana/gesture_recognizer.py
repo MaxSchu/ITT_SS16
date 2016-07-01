@@ -20,7 +20,8 @@ class GestureRecognizer(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         self.dw = QtWidgets.QWidget()
         layout.addWidget(self.dw)
-        self.label = QtWidgets.QLabel("After drawing a gesture, add it by pressing the 'Add Gesture' button", self)
+        self.label = QtWidgets.QLabel(
+            "After drawing a gesture, add it by pressing the 'Add Gesture' button", self)
         self.label.setMaximumHeight(25)
         self.label.setPalette(palette)
         layout.addWidget(self.label)
@@ -62,13 +63,13 @@ class GestureRecognizer(QtWidgets.QWidget):
         qp.setPen(QtGui.QColor(0, 155, 0))
         qp.drawPolyline(self.poly(self.points))
         for point in self.points:
-            qp.drawEllipse(point[0]-1, point[1] - 1, 2, 2)
+            qp.drawEllipse(point[0] - 1, point[1] - 1, 2, 2)
         qp.end()
 
     def distance(self, p1, p2):
         dx = p1[0] - p2[0]
         dy = p1[1] - p2[1]
-        return sqrt(dx*dx+dy*dy)
+        return sqrt(dx * dx + dy * dy)
 
     def total_length(self, point_list):
         p1 = point_list[0]
@@ -79,20 +80,23 @@ class GestureRecognizer(QtWidgets.QWidget):
         return length
 
     # see https://depts.washington.edu/aimgroup/proj/dollar/dollar.js
-    # method where the drawn points are distributed evenly on the stroke with 64 steps
+    # method where the drawn points are distributed evenly on the stroke with
+    # 64 steps
     def resample(self, point_list, step_count=64):
         newpoints = []
         length = self.total_length(point_list)
-        stepsize = length/step_count
+        stepsize = length / step_count
         curpos = 0
         newpoints.append(point_list[0])
         i = 1
         while i < len(point_list):
-            p1 = point_list[i-1]
+            p1 = point_list[i - 1]
             d = self.distance(p1, point_list[i])
-            if curpos+d >= stepsize:
-                nx = p1[0] + ((stepsize-curpos)/d)*(point_list[i][0]-p1[0])
-                ny = p1[1] + ((stepsize-curpos)/d)*(point_list[i][1]-p1[1])
+            if curpos + d >= stepsize:
+                nx = p1[0] + ((stepsize - curpos) / d) * \
+                    (point_list[i][0] - p1[0])
+                ny = p1[1] + ((stepsize - curpos) / d) * \
+                    (point_list[i][1] - p1[1])
                 newpoints.append([nx, ny])
                 point_list.insert(i, [nx, ny])
                 curpos = 0
@@ -147,7 +151,8 @@ class GestureRecognizer(QtWidgets.QWidget):
         return QtCore.QRect(minX, minY, maxX - minX, maxY - minY)
 
     # see https://depts.washington.edu/aimgroup/proj/dollar/dollar.js
-    # method to scale the gesture down to a given size according to its bounding box
+    # method to scale the gesture down to a given size according to its
+    # bounding box
     def scaleTo(self, points):
         b = self.boundingBox(points)
         size = 100
