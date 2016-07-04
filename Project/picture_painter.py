@@ -10,7 +10,7 @@ import wiimote
 
 
 class Painter(QtWidgets.QMainWindow):
-    defaultWiiMac = "B8:AE:6E:50:05:32"
+    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
     startPos = None
 
     def __init__(self):
