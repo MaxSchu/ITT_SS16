@@ -31,7 +31,6 @@ class Gestures(QtWidgets.QMainWindow):
                 self.image.setAlignment(QtCore.Qt.AlignCenter)
                 self.image.setGeometry(100, 50, 400, 400)
                 self.image.setPixmap(self.pixmap.scaledToHeight(400))
-                #self.image.setPixmap(QtGui.QPixmap((filename)).transformed(QtGui.QTransform().rotate(90)))
             thumbnail = QtWidgets.QLabel(self)
             thumbnail.setAlignment(QtCore.Qt.AlignCenter)
             thumbnail.setGeometry(i * 100, 500, 100, 100)
@@ -47,38 +46,50 @@ class Gestures(QtWidgets.QMainWindow):
         name = None
         print(("Connecting to %s (%s)" % (name, wiimoteAddress)))
         self.wm = wiimote.connect(wiimoteAddress, name)
-        #self.wm.ir.register_callback(self.moveCursor)
-        self.wm.accelerometer.register_callback(self.rotatePicture)
-        
-    def curImg(self):
-        i = 0
-        image = ""
-        filenames = glob.glob('*.png')
-        for filename in filenames[:6]:
-            if i == 0:
-                image = filename
-                i += 1
-        return image
+        self.wm.accelerometer.register_callback(self.transformPicture)
+        self.wm.ir.register_callback(self.moveCursor)
+
+    def moveCursor(self, irData):
+        if self.wm.buttons["B"]:
+            if len(irData) == 0:
+                self.startPos = None
+            if self.startPos is None and len(irData) != 0:
+                print("Lol")
+                self.startPos = [irData[0]["x"], irData[0]["y"]]
+            else:
+                if(self.startPos is not None):
+                    difx = self.startPos[0] - irData[0]["x"]
+                    dify = self.startPos[1] - irData[0]["y"]
+                    coordx = self.cursor.x() + difx
+                    coordy = self.cursor.y() - dify
+                    if coordx < 600 and coordy < 600 and coordx > 0 and coordy > 0:
+                        self.cursor.move(coordx, coordy)
+                    self.startPos = [irData[0]["x"], irData[0]["y"]]
+                    print("difx: " + str(difx) + ", difY: " + str(dify))
+                    difx = 0
+                    dify = 0
     
-    def rotatePicture(self, accelData):
+    def transformPicture(self, accelData):
+        x, y, z = accelData[0], accelData[1], accelData[2]
+        offset = 512        
+        # rotate
         if self.wm.buttons["A"]:
-            x, y, z = accelData[0], accelData[1], accelData[2]
-            angle = ((x - 482) * 2.9)-90
-            print('x: '+str(x)+' angle: '+str(angle))
-            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(angle)).scaledToHeight(400))
-            time.sleep(0.5)
+            
+            centeredZ = z - offset
+            centeredX = x - offset
 
-    def toArray(self, source):
-        return []
+            rot_angle = -(scipy.degrees(scipy.arctan2(centeredZ, centeredX)) - 90)
+            print('x: '+str(x)+' rot_angle: '+str(rot_angle))
+            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle)).scaledToHeight(400))
+        # zoom
+        if self.wm.buttons["Down"]:
+            centeredZ = z - offset
+            centeredY = y - offset
 
-    '''while True:
-        if self.wm.buttons["A"]:
-            self.wm.leds[1] = True
-            self.wm.rumble(0.1)
-        else:
-            self.wm.leds[1] = False
-            pass
-        time.sleep(0.05)'''
+            tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
+            scale_val = abs(tilt_angle / 100) + 1
+            print('x: '+str(x)+' tilt_angle: '+str(tilt_angle)+ 'scale_val: '+str(scale_val))
+            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val)))
 
 
 def main():
