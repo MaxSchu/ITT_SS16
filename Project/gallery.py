@@ -17,6 +17,8 @@ class Gallery(QtWidgets.QMainWindow):
     startPos = None
     signal = QtCore.pyqtSignal(int)
     pixmapStack = []
+    currentPixmapIndex = 0
+    painted = False
 
     def __init__(self, width, height):
         super(self.__class__, self).__init__()
@@ -71,6 +73,8 @@ class Gallery(QtWidgets.QMainWindow):
         self.animateOut.stateChanged.connect(self.animationFinished)
         self.animateIn.stateChanged.connect(self.animationFinished)
         self.animationsRunning = 0
+        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+        self.currentPixmapIndex = 0
 
     def gestureAction(self, action):
         print(str(action))
@@ -124,11 +128,23 @@ class Gallery(QtWidgets.QMainWindow):
 
     def buttonPressed(self, changedButtons):
         for button in changedButtons:
-            if(button[0] == 'B' and button[1]):
-                print("B pressed")
-                self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
-            if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0):
-                self.image.setPixmap(self.pixmapStack.pop())
+            if(button[0] == 'B'):
+                if(button[1]):
+                    print("B pressed")
+                else:
+                    print("B released")
+                    if self.painted:
+                        self.painted = False
+                        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+                        self.currentPixmapIndex += 1
+            if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
+                self.currentPixmapIndex -= 1
+                print(self.currentPixmapIndex, self.pixmapStack)
+                self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
+            if(button[0] == 'Plus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack)-1)):
+                self.currentPixmapIndex += 1
+                print(self.currentPixmapIndex, self.pixmapStack)
+                self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
         
 
     def initCursor(self):
@@ -152,6 +168,7 @@ class Gallery(QtWidgets.QMainWindow):
                     self.cursor.move(coordx, coordy)
                     if self.wm.buttons["B"] and self.animationsRunning == 0:
                         self.paint(coordx, coordy)
+                        self.painted = True
                 self.startPos = [irData[0]["x"], irData[0]["y"]]
                 difx = 0
                 dify = 0
@@ -177,6 +194,7 @@ class Gallery(QtWidgets.QMainWindow):
             if self.animationsRunning == 0:
                 self.pixmapStack = []
                 self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+                self.currentPixmapIndex = 0
 
 
 def main():
