@@ -41,10 +41,10 @@ class Gallery(QtWidgets.QMainWindow):
         self.currentIndex = 0
         self.imageOff = QtWidgets.QLabel(self)
         self.imageOff.setGeometry(0, 0, width, self.imageHeight)
-        self.imageOff.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+        self.imageOff.setAlignment(QtCore.Qt.AlignCenter)
         self.image = QtWidgets.QLabel(self)
         self.image.setGeometry(0, 0, width, self.imageHeight)
-        self.image.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+        self.image.setAlignment(QtCore.Qt.AlignCenter)
         self.thumbnails = []
         self.maxCount = width / self.thumbnailWidth
         self.thumbnailPadding = self.thumbnailWidth / self.maxCount
