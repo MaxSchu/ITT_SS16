@@ -14,9 +14,9 @@ from activity_recognition import GestureRecognizer
 
 
 class Gallery(QtWidgets.QMainWindow):
-    defaultWiiMac = "B8:AE:6E:50:05:32"
+    defaultWiiMac = "B8:AE:6E:18:3A:ED"
     startPos = None
-    signal = QtCore.pyqtSignal(int)
+    signal = QtCore.pyqtSignal(int, bool)
     pixmapStack = []
     currentPixmapIndex = 0
     painted = False
@@ -34,6 +34,9 @@ class Gallery(QtWidgets.QMainWindow):
         self.heightPadding = height / 6
         self.imageHeight = height / 6 * 5
         self.imageWidth = width / 10 * 9
+        self.arrowWidth = 10
+        self.arrowHeight = 20
+        self.arrowY = self.imageHeight - ((self.heightPadding - self.arrowHeight)/2)
         self.currentIndex = 0
         self.imageOff = QtWidgets.QLabel(self)
         self.imageOff.setGeometry(0, 0, width, self.imageHeight)
@@ -43,7 +46,7 @@ class Gallery(QtWidgets.QMainWindow):
         self.image.setAlignment(QtCore.Qt.AlignCenter)
         self.thumbnails = []
         self.maxCount = width / self.thumbnailWidth
-        self.filenames = glob.glob('*.png')[:int(self.maxCount)]
+        self.filenames = glob.glob('images/*.png')[:int(self.maxCount)]
         print(width, height, self.thumbnailWidth, self.thumbnailHeight,
               self.imageHeight, int(self.maxCount))
         self.count = 0
@@ -66,6 +69,7 @@ class Gallery(QtWidgets.QMainWindow):
             self.count += 1
 
         self.initCursor()
+        self.initArrow()
         self.signal.connect(self.animate)
         self.initWiimote(self.defaultWiiMac)
         gr = GestureRecognizer(self.gestureAction, self.wm)
@@ -73,8 +77,11 @@ class Gallery(QtWidgets.QMainWindow):
             self.imageOff, str("geometry").encode("utf-8"), self)
         self.animateIn = QtCore.QPropertyAnimation(
             self.image, str("geometry").encode("utf-8"), self)
+        self.animateArrow = QtCore.QPropertyAnimation(
+            self.arrow, str("geometry").encode("utf-8"), self)
         self.animateOut.stateChanged.connect(self.animationFinished)
         self.animateIn.stateChanged.connect(self.animationFinished)
+        self.animateArrow.stateChanged.connect(self.animationFinished)
         self.animationsRunning = 0
         self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
         self.currentPixmapIndex = 0
@@ -97,7 +104,7 @@ class Gallery(QtWidgets.QMainWindow):
                     self.image.setPixmap(pixmap)
                     self.pixmap = pixmap
                     print('set pixmap')
-                    self.signal.emit(-self.width)
+                    self.signal.emit(-self.width, True)
                 else:
                     print("Max index reached")
             elif(str(action) == "left"):
@@ -115,20 +122,28 @@ class Gallery(QtWidgets.QMainWindow):
                     self.image.setPixmap(pixmap)
                     self.pixmap = pixmap
                     print('set pixmap')
-                    self.signal.emit(self.width)
+                    self.signal.emit(self.width, False)
                 else:
                     print("Minimum index reached")
 
-    def animate(self, targetPos):
-        self.animationsRunning = 2
+    def animate(self, targetPos, directionRight):
+        self.animationsRunning = 3
         self.animateOut.setDuration(1000)
         self.animateOut.setEndValue(QtCore.QRect(
             targetPos, 0, self.width, self.imageHeight))
         self.animateIn.setDuration(1000)
         self.animateIn.setEndValue(QtCore.QRect(
             0, 0, self.width, self.imageHeight))
+        if directionRight:
+            arrowPos = self.arrow.geometry().topLeft().x() + self.thumbnailWidth
+        else:
+            arrowPos = self.arrow.geometry().topLeft().x() - self.thumbnailWidth
+        self.animateArrow.setEndValue(QtCore.QRect(
+            arrowPos, self.arrowY, self.arrowWidth, self.arrowHeight))
+        self.animateArrow.setDuration(1000)
         self.animateOut.start()
         self.animateIn.start()
+        self.animateArrow.start()
 
     def initWiimote(self, wiimoteAddress):
         name = None
@@ -163,6 +178,12 @@ class Gallery(QtWidgets.QMainWindow):
         self.cursor.setAlignment(QtCore.Qt.AlignCenter)
         self.cursor.setGeometry(100, 50, 10, 10)
         self.cursor.setPixmap(QtGui.QPixmap(("cursor.png")).scaledToHeight(10))
+
+    def initArrow(self):
+        self.arrow = QtWidgets.QLabel(self)
+        self.arrow.setAlignment(QtCore.Qt.AlignCenter)
+        self.arrow.setGeometry(self.thumbnailWidth / 2 - self.arrowWidth / 2, self.arrowY, self.arrowWidth, self.arrowHeight)
+        self.arrow.setPixmap(QtGui.QPixmap(("arrow.png")).scaledToHeight(20))
 
     def moveCursor(self, irData):
         if self.wm.buttons["A"]:
@@ -255,6 +276,9 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     screen = QtWidgets.QDesktopWidget().availableGeometry()
     gallery = Gallery(screen.width(), screen.height())
+    palette = gallery.palette()
+    palette.setColor(gallery.backgroundRole(), QtCore.Qt.black)
+    gallery.setPalette(palette)
     gallery.show()
     sys.exit(app.exec_())
 
