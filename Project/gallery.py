@@ -13,7 +13,7 @@ from activity_recognition import GestureRecognizer
 
 
 class Gallery(QtWidgets.QMainWindow):
-    defaultWiiMac = "B8:AE:6E:50:05:32"
+    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
     startPos = None
     signal = QtCore.pyqtSignal(int)
 
@@ -63,6 +63,12 @@ class Gallery(QtWidgets.QMainWindow):
         self.signal.connect(self.animate)
         self.initWiimote(self.defaultWiiMac)
         gr = GestureRecognizer(self.gestureAction, self.wm)
+        self.animateOut = QtCore.QPropertyAnimation(
+            self.imageOff, str("geometry").encode("utf-8"), self)
+        self.animateIn = QtCore.QPropertyAnimation(
+            self.image, str("geometry").encode("utf-8"), self)
+        self.animateOut.stateChanged.connect(self.animationFinished)
+        self.animateIn.stateChanged.connect(self.animationFinished)
 
     def gestureAction(self, action):
         print(str(action))
@@ -96,13 +102,9 @@ class Gallery(QtWidgets.QMainWindow):
                 print("Minimum index reached")
 
     def animate(self, targetPos):
-        self.animateOut = QtCore.QPropertyAnimation(
-            self.imageOff, str("geometry").encode("utf-8"), self)
         self.animateOut.setDuration(1000)
         self.animateOut.setEndValue(QtCore.QRect(
             targetPos, 0, self.width, self.imageHeight))
-        self.animateIn = QtCore.QPropertyAnimation(
-            self.image, str("geometry").encode("utf-8"), self)
         self.animateIn.setDuration(1000)
         self.animateIn.setEndValue(QtCore.QRect(
             0, 0, self.width, self.imageHeight))
@@ -154,6 +156,10 @@ class Gallery(QtWidgets.QMainWindow):
         painter.drawEllipse(x, y, 10, 10)
         painter.end()
         self.image.setPixmap(pixmap)
+
+    def animationFinished(self, newState, oldState):
+        if newState == QtCore.QAbstractAnimation.Stopped and oldState == QtCore.QAbstractAnimation.Running:
+            print("animation finished")
 
 
 def main():
