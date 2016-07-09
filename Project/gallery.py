@@ -15,7 +15,7 @@ from activity_recognition import GestureRecognizer
 
 class Gallery(QtWidgets.QMainWindow):
 
-    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
+    defaultWiiMac = "B8:AE:6E:18:3A:ED"
     startPos = None
     signal = QtCore.pyqtSignal(int, bool)
     pixmapStack = []
@@ -32,7 +32,7 @@ class Gallery(QtWidgets.QMainWindow):
         self.setGeometry(0, 0, width, height)
         self.thumbnailHeight = height / 6
         self.thumbnailWidth = self.thumbnailHeight
-        self.heightPadding = height / 6
+        self.heightPadding = height / 12
         self.imageHeight = height / 6 * 5
         self.imageWidth = width / 10 * 9
         self.arrowWidth = 10
@@ -44,11 +44,16 @@ class Gallery(QtWidgets.QMainWindow):
         self.imageOff.setAlignment(QtCore.Qt.AlignCenter)
         self.image = QtWidgets.QLabel(self)
         self.image.setGeometry(0, 0, width, self.imageHeight)
-        self.image.setAlignment(QtCore.Qt.AlignCenter)
+        self.image.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.thumbnails = []
         self.maxCount = width / self.thumbnailWidth
-        self.filenames = glob.glob('images/*.png')[:int(self.maxCount)]
-        print(width, height, self.thumbnailWidth, self.thumbnailHeight,
+        self.thumbnailPadding = self.thumbnailWidth / self.maxCount
+        #self.filenames = glob.glob('images/*.png')[:int(self.maxCount)]
+        self.filenames = ("images/01ITT Projektpräsentation1.png", "images/02ITT Projektpräsentation2.png",
+                          "images/03ITT Projektpräsentation3.png", "images/04ITT Projektpräsentation4.png",
+                          "images/05ITT Projektpräsentation5.png", "images/06ITT Projektpräsentation6.png",
+                          "images/07ITT Projektpräsentation7.png", "images/08ITT Projektpräsentation8.png")
+        print(width, height, self.thumbnailWidth, self.thumbnailHeight, self.thumbnailPadding,
               self.imageHeight, int(self.maxCount))
         self.count = 0
         for filename in self.filenames:
@@ -65,7 +70,8 @@ class Gallery(QtWidgets.QMainWindow):
             # use full ABSOLUTE path to the image, not relative
             pixmap = QtGui.QPixmap(filename)
             pixmap = pixmap.scaled(
-                self.thumbnailWidth, self.thumbnailHeight, QtCore.Qt.KeepAspectRatio)
+                self.thumbnailWidth - self.thumbnailPadding, self.thumbnailHeight - self.thumbnailPadding, QtCore.Qt.KeepAspectRatio)
+            print(pixmap.width())
             self.thumbnails[self.count].setPixmap(pixmap)
             self.count += 1
 
