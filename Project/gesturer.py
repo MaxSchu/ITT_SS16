@@ -17,6 +17,7 @@ class Gestures(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.c = 0
         self.initUI()
         self.initWiimote(self.defaultWiiMac)
 
@@ -42,6 +43,7 @@ class Gestures(QtWidgets.QMainWindow):
         self.cursor.setGeometry(100, 50, 10, 10)
         self.cursor.setPixmap(QtGui.QPixmap(("cursor.png")).scaledToHeight(10))
 
+   
     def initWiimote(self, wiimoteAddress):
         name = None
         print(("Connecting to %s (%s)" % (name, wiimoteAddress)))
@@ -74,23 +76,56 @@ class Gestures(QtWidgets.QMainWindow):
         offset = 512        
         # rotate
         if self.wm.buttons["A"]:
+            self.c += 1
+            print(self.c)
+            if self.c % 2 == 0:
             
-            centeredZ = z - offset
-            centeredX = x - offset
+                centeredZ = z - offset
+                centeredX = x - offset
+                rot_angle_rad = - scipy.arctan2(centeredZ, centeredX)
+                rot_angle = int(-(scipy.degrees(scipy.arctan2(centeredZ, centeredX)) - 90))
+                print('x: '+str(x)+' rot_angle: '+str(rot_angle))
+                if rot_angle < 0:
+                    rot_angle = 360 + rot_angle
+                '''for i in range(45):
+                   #self.c += 1
+                   cur_angle = self.get_sector(rot_angle)
+                   self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(cur_angle+i)).scaledToHeight(400)) '''
+           
+                self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle), 1).scaledToHeight(400))
+                #time.sleep(0.5)
 
-            rot_angle = -(scipy.degrees(scipy.arctan2(centeredZ, centeredX)) - 90)
-            print('x: '+str(x)+' rot_angle: '+str(rot_angle))
-            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle)).scaledToHeight(400))
         # zoom
         if self.wm.buttons["Down"]:
             centeredZ = z - offset
             centeredY = y - offset
 
             tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
-            scale_val = abs(tilt_angle / 100) + 1
-            print('x: '+str(x)+' tilt_angle: '+str(tilt_angle)+ 'scale_val: '+str(scale_val))
-            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val)))
+            scale_val = abs(tilt_angle / 100)
+            print('x: '+str(x)+' tilt_angle: '+str(tilt_angle)+ ' scale_val: '+str(scale_val))
+            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val)))   
+        #else:
+            #return
 
+    def get_sector(self, rot_angle):
+        if rot_angle >= 0 and rot_angle < 45:
+            return 0
+        elif rot_angle >= 45 and rot_angle < 90:
+            return 45
+        elif rot_angle >= 90 and rot_angle < 135:
+            return 90
+        elif rot_angle >= 135 and rot_angle < 180:
+            return 135
+        elif rot_angle >= 180 and rot_angle < 225:
+            return 180
+        elif rot_angle >= 225 and rot_angle < 270:
+            return 225
+        elif rot_angle >= 270 and rot_angle < 315:
+            return 270
+        elif rot_angle >= 315 and rot_angle < 360:
+            return 315
+        else:
+            return -1
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

@@ -8,12 +8,13 @@ import glob
 import _thread
 import time
 import wiimote
+import scipy
 from PyQt5 import QtGui, QtCore, QtWidgets
 from activity_recognition import GestureRecognizer
 
 
 class Gallery(QtWidgets.QMainWindow):
-    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
+    defaultWiiMac = "B8:AE:6E:50:05:32"
     startPos = None
     signal = QtCore.pyqtSignal(int)
     pixmapStack = []
@@ -22,6 +23,7 @@ class Gallery(QtWidgets.QMainWindow):
 
     def __init__(self, width, height):
         super(self.__class__, self).__init__()
+        self.drawingPixmap = None
         # fix for hidden lower bar
         height -= 30
         self.width = width
@@ -51,6 +53,7 @@ class Gallery(QtWidgets.QMainWindow):
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
                 self.image.setPixmap(pixmap)
+                self.pixmap = pixmap
             self.thumbnails.append(QtWidgets.QLabel(self))
             self.thumbnails[self.count].setAlignment(QtCore.Qt.AlignCenter)
             self.thumbnails[self.count].setGeometry(
@@ -81,6 +84,8 @@ class Gallery(QtWidgets.QMainWindow):
         if self.animationsRunning == 0:
             if (str(action) == "right"):
                 if self.currentIndex < self.count - 1:
+                    self.savePixMap(self.drawingPixmap)
+                    self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
                     self.currentIndex += 1
                     pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                     pixmap = pixmap.scaled(
@@ -90,12 +95,16 @@ class Gallery(QtWidgets.QMainWindow):
                     self.image.setGeometry(
                         self.width, 0, self.width, self.imageHeight)
                     self.image.setPixmap(pixmap)
+                    self.pixmap = pixmap
+                    print('set pixmap')
                     self.signal.emit(-self.width)
                 else:
                     print("Max index reached")
             elif(str(action) == "left"):
                 if self.currentIndex > 0:
                     self.currentIndex -= 1
+                    self.savePixMap(self.drawingPixmap)
+                    self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
                     pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                     pixmap = pixmap.scaled(
                         self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -104,6 +113,8 @@ class Gallery(QtWidgets.QMainWindow):
                     self.image.setGeometry(-self.width, 0,
                                            self.width, self.imageHeight)
                     self.image.setPixmap(pixmap)
+                    self.pixmap = pixmap
+                    print('set pixmap')
                     self.signal.emit(self.width)
                 else:
                     print("Minimum index reached")
@@ -125,6 +136,7 @@ class Gallery(QtWidgets.QMainWindow):
         self.wm = wiimote.connect(wiimoteAddress, name)
         self.wm.ir.register_callback(self.moveCursor)
         self.wm.buttons.register_callback(self.buttonPressed)
+        self.wm.accelerometer.register_callback(self.transformPicture)
 
     def buttonPressed(self, changedButtons):
         for button in changedButtons:
@@ -145,7 +157,6 @@ class Gallery(QtWidgets.QMainWindow):
                 self.currentPixmapIndex += 1
                 print(self.currentPixmapIndex, self.pixmapStack)
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
-        
 
     def initCursor(self):
         self.cursor = QtWidgets.QLabel(self)
@@ -154,39 +165,38 @@ class Gallery(QtWidgets.QMainWindow):
         self.cursor.setPixmap(QtGui.QPixmap(("cursor.png")).scaledToHeight(10))
 
     def moveCursor(self, irData):
-        if len(irData) == 0:
-            self.startPos = None
-        if self.startPos is None and len(irData) != 0:
-            self.startPos = [irData[0]["x"], irData[0]["y"]]
-        else:
-            if(self.startPos is not None):
-                difx = self.startPos[0] - irData[0]["x"]
-                dify = self.startPos[1] - irData[0]["y"]
-                coordx = self.cursor.x() + difx
-                coordy = self.cursor.y() - dify
-                if coordx < self.width and coordy < self.height and coordx > 0 and coordy > 0:
-                    self.cursor.move(coordx, coordy)
-                    if self.wm.buttons["B"] and self.animationsRunning == 0:
-                        self.paint(coordx, coordy)
-                        self.painted = True
+        if self.wm.buttons["A"]:
+            if len(irData) == 0:
+                self.startPos = None
+            if self.startPos is None and len(irData) != 0:
                 self.startPos = [irData[0]["x"], irData[0]["y"]]
-                difx = 0
-                dify = 0
+            else:
+                if(self.startPos is not None):
+                    difx = self.startPos[0] - irData[0]["x"]
+                    dify = self.startPos[1] - irData[0]["y"]
+                    coordx = self.cursor.x() + difx
+                    coordy = self.cursor.y() - dify
+                    if coordx < self.width and coordy < self.height and coordx > 0 and coordy > 0:
+                        self.cursor.move(coordx, coordy)
+                        if self.wm.buttons["B"]:
+                            self.paint(coordx, coordy)
+                    self.startPos = [irData[0]["x"], irData[0]["y"]]
+                    difx = 0
+                    dify = 0
 
     def paint(self, x, y):
-        pixmap = self.image.pixmap()
-        x -= (self.width - pixmap.width())/2
-        y -= (self.image.height() - pixmap.height())/2
-        print("paint, x: " + str(x) + " , y: " + str(y))
+        self.drawingPixmap = self.image.pixmap()
+        x -= (self.width - self.drawingPixmap.width())/2
+        y -= (self.image.height() - self.drawingPixmap.height())/2
         pen = QtGui.QPen(QtGui.QColor("red"))
         pen.setWidth(1)
         painter = QtGui.QPainter()
-        painter.begin(pixmap)
+        painter.begin(self.drawingPixmap)
         painter.setBrush(QtGui.QColor("red"))
         painter.setPen(pen)
         painter.drawEllipse(x, y, 10, 10)
         painter.end()
-        self.image.setPixmap(pixmap)
+        self.image.setPixmap(self.drawingPixmap)
 
     def animationFinished(self, newState, oldState):
         if newState == QtCore.QAbstractAnimation.Stopped and oldState == QtCore.QAbstractAnimation.Running:
@@ -196,7 +206,51 @@ class Gallery(QtWidgets.QMainWindow):
                 self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                 self.currentPixmapIndex = 0
 
+    def transformPicture(self, accelData):
+        # rotate
+        if self.wm.buttons['Two']:
+            x, y, z = accelData[0], accelData[1], accelData[2]
+            offset = 512    
+            centeredZ = z - offset
+            centeredX = x - offset
+            rot_angle = int(-(scipy.degrees(scipy.arctan2(centeredZ, centeredX)) - 90))
+            if rot_angle < 0:
+               rot_angle = 360 + rot_angle
+            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle), 1))
+        elif self.wm.buttons['Down']:
+            self.zoomPicture(accelData)
+    
+    def zoomPicture(self, accelData):
+        x, y, z = accelData[0], accelData[1], accelData[2]
+        offset = 512  
+        centeredZ = z - offset
+        centeredY = y - offset
 
+        tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
+        print('tilt_angle: '+str(tilt_angle))
+        if tilt_angle <= -90:
+            tilt_angle = 360 + tilt_angle 
+        scale_val = (tilt_angle / 100) + 1
+        if scale_val < 0:
+            scale_val = - scale_val 
+        print('tilt_angle: '+str(tilt_angle)+ ' scale_val: '+str(scale_val))
+        self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val),1))   
+
+    def get_sector(self, rot_angle):
+        base = 45
+        return int(base * round(float(rot_angle)/base))
+
+    def setThumbnailPixmap(self, thumb, pixmap):
+        if pixmap is not None:
+            pixmap = pixmap.scaled(
+                    self.thumbnailWidth, self.thumbnailHeight, QtCore.Qt.KeepAspectRatio)
+            thumb.setPixmap(pixmap)
+            self.drawingPixmap = None
+
+    def savePixMap(self, pixmap):
+        if pixmap is not None:
+            pixmap.save(self.filenames[self.currentIndex], "png")
+        
 def main():
     app = QtWidgets.QApplication(sys.argv)
     screen = QtWidgets.QDesktopWidget().availableGeometry()
