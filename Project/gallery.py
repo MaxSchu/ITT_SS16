@@ -15,7 +15,7 @@ from activity_recognition import GestureRecognizer
 
 class Gallery(QtWidgets.QMainWindow):
 
-    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
+    defaultWiiMac = "B8:AE:6E:18:3A:ED"
     startPos = None
     signal = QtCore.pyqtSignal(int, bool)
     pixmapStack = []
@@ -51,11 +51,7 @@ class Gallery(QtWidgets.QMainWindow):
         self.thumbnails = []
         self.maxCount = width / self.thumbnailWidth
         self.thumbnailPadding = self.thumbnailWidth / self.maxCount
-        #self.filenames = glob.glob('images/*.png')[:int(self.maxCount)]
-        self.filenames = ("images/01ITT Projektpräsentation1.png", "images/02ITT Projektpräsentation2.png",
-                          "images/03ITT Projektpräsentation3.png", "images/04ITT Projektpräsentation4.png",
-                          "images/05ITT Projektpräsentation5.png", "images/06ITT Projektpräsentation6.png",
-                          "images/07ITT Projektpräsentation7.png", "images/08ITT Projektpräsentation8.png")
+        self.filenames = sorted(glob.glob('images/*.png')[:int(self.maxCount)])
         print(width, height, self.thumbnailWidth, self.thumbnailHeight, self.thumbnailPadding,
               self.imageHeight, int(self.maxCount))
         self.count = 0
@@ -96,10 +92,11 @@ class Gallery(QtWidgets.QMainWindow):
         self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
         self.currentPixmapIndex = 0
 
-    def gestureAction(self, action):
-        print(str(action))
+    def gestureAction(self, direction):
         if self.animationsRunning == 0:
-            if (str(action) == "right"):
+            if (int(direction) == -1):
+                # swipe left
+                print("swipe left")
                 if self.currentIndex < self.count - 1:
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
@@ -117,7 +114,9 @@ class Gallery(QtWidgets.QMainWindow):
                     self.signal.emit(-self.width, True)
                 else:
                     print("Max index reached")
-            elif(str(action) == "left"):
+            elif(int(direction) == 1):
+                # swipe right
+                print("swipe right")
                 if self.currentIndex > 0:
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
