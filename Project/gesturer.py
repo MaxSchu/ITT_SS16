@@ -87,7 +87,7 @@ class Gestures(QtWidgets.QMainWindow):
             centeredY = y - offset
 
             tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
-            scale_val = abs(tilt_angle / 100) + 1
+            scale_val = abs(tilt_angle / 100)
             print('x: '+str(x)+' tilt_angle: '+str(tilt_angle)+ 'scale_val: '+str(scale_val))
             self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val)))
 
