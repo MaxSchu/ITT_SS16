@@ -59,16 +59,13 @@ class GestureRecognizer():
         self.currentGestureData.append(values)
 
     def classify(self, gesture):
-        parsedData = gesture.trainingsData[0]
-        print("ACHTUNG:",parsedData)
+        parsedData = [self.parseDataset(dataSet) for dataSet in gesture.trainingsData]
         gradient = np.gradient(parsedData[0])
-        print("ACHTUNG:", gradient)
-        print("ACHTUNG:", sum(gradient))
         return sum(gradient)
 
-    def gestureListToString(self, gestureList):
-        #for debugging porposes, gets a string representation of gestureList
-        string = ""
-        for gesture in gestureList:
-            string += gesture.toString() + "\n"
-        return string
+    def parseDataset(self, dataSet):
+        x = []
+        #Use the difference from default sensor value
+        for values in dataSet:
+            x.append(values[0]-512)
+        return x

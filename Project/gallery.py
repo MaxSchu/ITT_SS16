@@ -14,6 +14,12 @@ from activity_recognition import GestureRecognizer
 
 
 class Gallery(QtWidgets.QMainWindow):
+    """
+    This Class manages the ui including all animations.
+    
+    Recognition of swipe gestures are handled by
+    the GestureRecognizer in activity_recognition.py
+    """
 
     defaultWiiMac = "B8:AE:6E:18:3A:ED"
     startPos = None
@@ -24,11 +30,34 @@ class Gallery(QtWidgets.QMainWindow):
 
     def __init__(self, width, height):
         super(self.__class__, self).__init__()
+        
+        self.initUI(width, height)
+        
         self.drawingPixmap = None
-        # fix for hidden lower bar
-        height -= 30
+        self.list = []
+        self.count = 0
+        self.curAngle = 0
+        self.currentIndex = 0
+        self.signal.connect(self.animate)
+        self.initWiimote(self.defaultWiiMac)
+        gr = GestureRecognizer(self.gestureAction, self.wm)
+        
+        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+        self.currentPixmapIndex = 0
+
+    def initUI(self, width, height):
+        self.initGeometryVars(width, height)
+        self.initImageContainers()
+        self.getImageFiles()
+        self.setPixmaps()
+        self.initCursor()
+        self.initArrow()
+        self.initAnimations()
+
+    def initGeometryVars(self, width, height):
         self.width = width
-        self.height = height
+        # fix for hidden lower bar
+        self.height = height - 30
         self.setGeometry(0, 0, width, height)
         self.thumbnailHeight = height / 6
         self.thumbnailWidth = self.thumbnailHeight
@@ -37,48 +66,53 @@ class Gallery(QtWidgets.QMainWindow):
         self.imageWidth = width / 10 * 9
         self.arrowWidth = 10
         self.arrowHeight = 20
-        self.count = 0
-        self.list = []
-        self.curAngle = 0
         self.arrowY = self.imageHeight - ((self.heightPadding - self.arrowHeight)/2)
-        self.currentIndex = 0
+        self.maxImageCount = width / self.thumbnailWidth
+        self.thumbnailPadding = self.thumbnailWidth / self.maxImageCount
+
+    def initImageContainers(self):
         self.imageOff = QtWidgets.QLabel(self)
-        self.imageOff.setGeometry(0, 0, width, self.imageHeight)
+        self.imageOff.setGeometry(0, 0, self.width, self.imageHeight)
         self.imageOff.setAlignment(QtCore.Qt.AlignCenter)
         self.image = QtWidgets.QLabel(self)
-        self.image.setGeometry(0, 0, width, self.imageHeight)
+        self.image.setGeometry(0, 0, self.width, self.imageHeight)
         self.image.setAlignment(QtCore.Qt.AlignCenter)
         self.thumbnails = []
-        self.maxCount = width / self.thumbnailWidth
-        self.thumbnailPadding = self.thumbnailWidth / self.maxCount
-        self.filenames = sorted(glob.glob('images/*.png')[:int(self.maxCount)])
-        print(width, height, self.thumbnailWidth, self.thumbnailHeight, self.thumbnailPadding,
-              self.imageHeight, int(self.maxCount))
-        self.count = 0
+
+    def getImageFiles(self):
+        # Gets all .png, .jpg, .jpeg and .bmp images from the /images folder
+        # Limited to the maxImageCount which is determined by the screen width
+        # the images are sorted alphabetically by their name
+        self.filenames = []
+        self.filenames.extend(glob.glob('images/*.png'))
+        self.filenames.extend(glob.glob('images/*.jpg'))
+        self.filenames.extend(glob.glob('images/*.jpeg'))
+        self.filenames.extend(glob.glob('images/*.bmp'))
+        self.filenames = sorted(self.filenames)[:int(self.maxImageCount)]
+        print(self.filenames)
+
+    def setPixmaps(self):
+        self.imageCount = 0
         for filename in self.filenames:
-            if self.count == 0:
+            if self.imageCount == 0:
+                # main image container
                 pixmap = QtGui.QPixmap(filename)
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
                 self.image.setPixmap(pixmap)
                 self.pixmap = pixmap
+                # thumbnails
             self.thumbnails.append(QtWidgets.QLabel(self))
-            self.thumbnails[self.count].setAlignment(QtCore.Qt.AlignCenter)
-            self.thumbnails[self.count].setGeometry(
-                self.count * self.thumbnailWidth, self.imageHeight, self.thumbnailWidth, self.thumbnailHeight)
-            # use full ABSOLUTE path to the image, not relative
+            self.thumbnails[self.imageCount].setAlignment(QtCore.Qt.AlignCenter)
+            self.thumbnails[self.imageCount].setGeometry(
+                self.imageCount * self.thumbnailWidth, self.imageHeight, self.thumbnailWidth, self.thumbnailHeight)
             pixmap = QtGui.QPixmap(filename)
             pixmap = pixmap.scaled(
                 self.thumbnailWidth - self.thumbnailPadding, self.thumbnailHeight - self.thumbnailPadding, QtCore.Qt.KeepAspectRatio)
-            print(pixmap.width())
-            self.thumbnails[self.count].setPixmap(pixmap)
-            self.count += 1
+            self.thumbnails[self.imageCount].setPixmap(pixmap)
+            self.imageCount += 1
 
-        self.initCursor()
-        self.initArrow()
-        self.signal.connect(self.animate)
-        self.initWiimote(self.defaultWiiMac)
-        gr = GestureRecognizer(self.gestureAction, self.wm)
+    def initAnimations(self):
         self.animateOut = QtCore.QPropertyAnimation(
             self.imageOff, str("geometry").encode("utf-8"), self)
         self.animateIn = QtCore.QPropertyAnimation(
@@ -89,15 +123,13 @@ class Gallery(QtWidgets.QMainWindow):
         self.animateIn.stateChanged.connect(self.animationFinished)
         self.animateArrow.stateChanged.connect(self.animationFinished)
         self.animationsRunning = 0
-        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
-        self.currentPixmapIndex = 0
 
     def gestureAction(self, direction):
         if self.animationsRunning == 0:
             if (int(direction) == -1):
                 # swipe left
                 print("swipe left")
-                if self.currentIndex < self.count - 1:
+                if self.currentIndex < self.imageCount - 1:
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
                     self.currentIndex += 1
@@ -165,33 +197,39 @@ class Gallery(QtWidgets.QMainWindow):
     def buttonPressed(self, changedButtons):
         #undo redo
         for button in changedButtons:
-            if(button[0] == 'B'):
-                if not button[1]:
-                    if self.painted:
-                        self.painted = False
-                        print("len: " + str(len(self.pixmapStack))+ ", index: " + str(self.currentPixmapIndex))
-                        if self.currentPixmapIndex < len(self.pixmapStack)-1:
-                            del self.pixmapStack[-self.currentPixmapIndex+1:]
-                        print("add")
-                        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
-                        self.currentPixmapIndex += 1
+            if(button[0] == 'B' and not button[1]):
+                # B button released
+                if self.painted:
+                    self.painted = False
+                    print("len: " + str(len(self.pixmapStack))+ ", index: " + str(self.currentPixmapIndex))
+                    if self.currentPixmapIndex < len(self.pixmapStack)-1:
+                        del self.pixmapStack[-self.currentPixmapIndex+1:]
+                    print("add")
+                    self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+                    self.currentPixmapIndex += 1
             if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
+                # Minus button released and undo stack is not empty -> undo
                 print("minus")
                 self.currentPixmapIndex -= 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
             if(button[0] == 'Plus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack)-1)):
+                # Plus button released and undo stack is not empty -> redo
                 self.currentPixmapIndex += 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
             if(button[0] == 'Two'):
                 if(button[1]):
+                    # 2 button pressed
                     self.wm.accelerometer.register_callback(self.collectData)
                     #self.collectData()
                 else:
+                    # 2 button released
                     self.wm.accelerometer.unregister_callback(self.collectData)
             if(button[0] == 'Down'):
                 if(button[1]):
+                    # DPAD down pressed
                     self.wm.accelerometer.register_callback(self.zoomPicture)
                 else:
+                    # DPAD down released
                     self.wm.accelerometer.unregister_callback(self.zoomPicture)
 
     def initCursor(self):
@@ -251,6 +289,7 @@ class Gallery(QtWidgets.QMainWindow):
         if newState == QtCore.QAbstractAnimation.Stopped and oldState == QtCore.QAbstractAnimation.Running:
             self.animationsRunning -= 1
             if self.animationsRunning == 0:
+                # all animations for last swipe gesture finished -> reset undo stack
                 self.pixmapStack = []
                 self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                 self.currentPixmapIndex = 0
