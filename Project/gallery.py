@@ -49,7 +49,7 @@ class Gallery(QtWidgets.QMainWindow):
             self.count += 1
         
 
-        defaultWiiMac = "B8:AE:6E:18:3A:ED"
+        defaultWiiMac = "B8:AE:6E:1B:AD:A0"
         self.signal.connect(self.animate)
         gr = GestureRecognizer(self.gestureAction)
         gr.initWiimote(defaultWiiMac)
