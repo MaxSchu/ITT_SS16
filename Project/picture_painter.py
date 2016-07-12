@@ -4,13 +4,14 @@
 import os
 import sys
 import glob
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets, Qt
+from PyQt5.QtGui import *
 import sys
 import wiimote
 
 
 class Painter(QtWidgets.QMainWindow):
-    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
+    defaultWiiMac = "B8:AE:6E:50:05:32"
     startPos = None
 
     def __init__(self):
@@ -24,10 +25,10 @@ class Painter(QtWidgets.QMainWindow):
         filenames = glob.glob('*.png')
         for filename in filenames[:6]:
             if i == 0:
-                image = QtWidgets.QLabel(self)
-                image.setAlignment(QtCore.Qt.AlignCenter)
-                image.setGeometry(100, 50, 400, 400)
-                image.setPixmap(QtGui.QPixmap((filename)).scaledToHeight(400))
+                self.image = QtWidgets.QLabel(self)
+                self.image.setAlignment(QtCore.Qt.AlignCenter)
+                self.image.setGeometry(100, 50, 400, 400)
+                self.image.setPixmap(QtGui.QPixmap((filename)).scaledToHeight(400))
             thumbnail = QtWidgets.QLabel(self)
             thumbnail.setAlignment(QtCore.Qt.AlignCenter)
             thumbnail.setGeometry(i * 100, 500, 100, 100)
@@ -49,7 +50,6 @@ class Painter(QtWidgets.QMainWindow):
         if len(irData) == 0:
             self.startPos = None
         if self.startPos is None and len(irData) != 0:
-            print("Lol")
             self.startPos = [irData[0]["x"], irData[0]["y"]]
         else:
             if(self.startPos is not None):
@@ -59,10 +59,26 @@ class Painter(QtWidgets.QMainWindow):
                 coordy = self.cursor.y() - dify
                 if coordx < 600 and coordy < 600 and coordx > 0 and coordy > 0:
                     self.cursor.move(coordx, coordy)
+                    if self.wm.buttons["B"]:
+                        self.paint(coordx, coordy)
                 self.startPos = [irData[0]["x"], irData[0]["y"]]
-                print("difx: " + str(difx) + ", difY: " + str(dify))
                 difx = 0
                 dify = 0
+
+    def paint(self, x, y):
+        x -= self.image.x()
+        y -= self.image.y()
+        pen = QPen(QtGui.QColor("red"))
+        pen.setWidth(1)
+        pixmap = self.image.pixmap()
+        painter = QPainter()
+        painter.begin(pixmap)
+        painter.setBrush(QtGui.QColor("red"))
+        painter.setPen(pen)
+        painter.drawEllipse(x, y, 10, 10)
+        painter.end()
+        self.image.setPixmap(pixmap)
+
 
 
 def main():
