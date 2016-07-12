@@ -24,8 +24,10 @@ class GestureRecognizer():
     recording = False
     gestureListFileName = "gesture_list.txt"
     
-    def __init__(self, callback):
+    def __init__(self, callback, wm):
         self.callback = callback
+        self.wm = wm
+        self.wm.buttons.register_callback(self.wiimoteButtonPressed)
         self.loadGestureList()
 
     def loadGestureList(self):
@@ -36,12 +38,6 @@ class GestureRecognizer():
                 self.loadCSVData(gesture)
                 self.gestureList.append(gesture)
         self.reloadClassifier()
-
-    def initWiimote(self, wiimoteAddress):
-        name = None
-        self.callback(("Connecting to %s (%s)" % (name, wiimoteAddress)))
-        self.wm = wiimote.connect(wiimoteAddress, name)
-        self.wm.buttons.register_callback(self.wiimoteButtonPressed)
 
     def loadCSVData(self, gesture):
         fileCount = 0
