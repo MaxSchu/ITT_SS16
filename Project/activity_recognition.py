@@ -60,10 +60,10 @@ class GestureRecognizer():
             return
         for btn in btns:
             if btn[1]:
-                if btn[0] == "A" and not self.recording:
+                if btn[0] == "One" and not self.recording:
                     self.startRecording()
                     self.recording = True
-                elif btn[0] == "A" and self.recording:
+                elif btn[0] == "One" and self.recording:
                     self.stopRecording()
                     self.recording = False
 

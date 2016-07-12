@@ -69,6 +69,7 @@ class Gallery(QtWidgets.QMainWindow):
         if (str(action) == "right"):
             if self.currentIndex < self.count - 1:
                 self.currentIndex += 1
+                self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
                 pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -83,6 +84,7 @@ class Gallery(QtWidgets.QMainWindow):
         elif(str(action) == "left"):
             if self.currentIndex > 0:
                 self.currentIndex -= 1
+                self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
                 pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -122,38 +124,44 @@ class Gallery(QtWidgets.QMainWindow):
         self.cursor.setPixmap(QtGui.QPixmap(("cursor.png")).scaledToHeight(10))
 
     def moveCursor(self, irData):
-        if len(irData) == 0:
-            self.startPos = None
-        if self.startPos is None and len(irData) != 0:
-            self.startPos = [irData[0]["x"], irData[0]["y"]]
-        else:
-            if(self.startPos is not None):
-                difx = self.startPos[0] - irData[0]["x"]
-                dify = self.startPos[1] - irData[0]["y"]
-                coordx = self.cursor.x() + difx
-                coordy = self.cursor.y() - dify
-                if coordx < self.width and coordy < self.height and coordx > 0 and coordy > 0:
-                    self.cursor.move(coordx, coordy)
-                    if self.wm.buttons["B"]:
-                        self.paint(coordx, coordy)
+        if self.wm.buttons["A"]:
+            if len(irData) == 0:
+                self.startPos = None
+            if self.startPos is None and len(irData) != 0:
                 self.startPos = [irData[0]["x"], irData[0]["y"]]
-                difx = 0
-                dify = 0
+            else:
+                if(self.startPos is not None):
+                    difx = self.startPos[0] - irData[0]["x"]
+                    dify = self.startPos[1] - irData[0]["y"]
+                    coordx = self.cursor.x() + difx
+                    coordy = self.cursor.y() - dify
+                    if coordx < self.width and coordy < self.height and coordx > 0 and coordy > 0:
+                        self.cursor.move(coordx, coordy)
+                        if self.wm.buttons["B"]:
+                            self.paint(coordx, coordy)
+                    self.startPos = [irData[0]["x"], irData[0]["y"]]
+                    difx = 0
+                    dify = 0
 
     def paint(self, x, y):
-        pixmap = self.image.pixmap()
-        x -= (self.width - pixmap.width())/2
-        y -= (self.image.height() - pixmap.height())/2
+        self.drawingPixmap = self.image.pixmap()
+        x -= (self.width - self.drawingPixmap.width())/2
+        y -= (self.image.height() - self.drawingPixmap.height())/2
         print("paint, x: " + str(x) + " , y: " + str(y))
         pen = QtGui.QPen(QtGui.QColor("red"))
         pen.setWidth(1)
         painter = QtGui.QPainter()
-        painter.begin(pixmap)
+        painter.begin(self.drawingPixmap)
         painter.setBrush(QtGui.QColor("red"))
         painter.setPen(pen)
         painter.drawEllipse(x, y, 10, 10)
         painter.end()
-        self.image.setPixmap(pixmap)
+        self.image.setPixmap(self.drawingPixmap)
+
+    def setThumbnailPixmap(self, thumb, pixmap):
+        pixmap = pixmap.scaled(
+                self.thumbnailWidth, self.thumbnailHeight, QtCore.Qt.KeepAspectRatio)
+        thumb.setPixmap(pixmap)
 
 
 def main():
