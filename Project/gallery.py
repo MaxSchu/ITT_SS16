@@ -217,6 +217,7 @@ class Gallery(QtWidgets.QMainWindow):
         painter.setPen(pen)
         painter.drawEllipse(x, y, 10, 10)
         painter.end()
+        self.painted = True
         self.image.setPixmap(self.drawingPixmap)
 
     def animationFinished(self, newState, oldState):
