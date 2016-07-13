@@ -70,8 +70,9 @@ class Gallery(QtWidgets.QMainWindow):
         print(str(self.currentIndex))
         if (str(action) == "right"):
             if self.currentIndex < self.count - 1:
-                self.currentIndex += 1
+                self.savePixMap(self.drawingPixmap)
                 self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
+                self.currentIndex += 1
                 pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -85,8 +86,9 @@ class Gallery(QtWidgets.QMainWindow):
                 print("Max index reached")
         elif(str(action) == "left"):
             if self.currentIndex > 0:
-                self.currentIndex -= 1
+                self.savePixMap(self.drawingPixmap)
                 self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
+                self.currentIndex -= 1
                 pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -167,7 +169,8 @@ class Gallery(QtWidgets.QMainWindow):
             self.drawingPixmap = None
 
     def savePixMap(self, pixmap):
-        pixmap.save(self.filenames[self.currentIndex], "png")
+        if pixmap is not None:
+            pixmap.save(self.filenames[self.currentIndex], "png")
 
 
 def main():
