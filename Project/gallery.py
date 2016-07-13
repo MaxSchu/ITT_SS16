@@ -160,11 +160,14 @@ class Gallery(QtWidgets.QMainWindow):
                 if not button[1]:
                     if self.painted:
                         self.painted = False
+                        print("len: " + str(len(self.pixmapStack))+ ", index: " + str(self.currentPixmapIndex))
                         if self.currentPixmapIndex < len(self.pixmapStack)-1:
-                            del self.pixmapStack[-self.currentPixmapIndex:]
+                            del self.pixmapStack[-self.currentPixmapIndex+1:]
+                        print("add")
                         self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                         self.currentPixmapIndex += 1
             if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
+                print("minus")
                 self.currentPixmapIndex -= 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
             if(button[0] == 'Plus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack)-1)):
@@ -182,6 +185,12 @@ class Gallery(QtWidgets.QMainWindow):
         self.arrow.setAlignment(QtCore.Qt.AlignCenter)
         self.arrow.setGeometry(self.thumbnailWidth / 2 - self.arrowWidth / 2, self.arrowY, self.arrowWidth, self.arrowHeight)
         self.arrow.setPixmap(QtGui.QPixmap(("arrow.png")).scaledToHeight(20))
+
+    def resetUndoRedoStack(self):
+        print("resttin")
+        self.pixmapStack = []
+        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+        self.currentPixmapIndex = 0
 
     def moveCursor(self, irData):
         if self.wm.buttons["A"]:
@@ -238,8 +247,11 @@ class Gallery(QtWidgets.QMainWindow):
                rot_angle = 360 + rot_angle
             self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle), 1))
             self.drawingPixmap = self.image.pixmap()
+            self.resetUndoRedoStack()
         elif self.wm.buttons['Down']:
             self.zoomPicture(accelData)
+            self.drawingPixmap = self.image.pixmap()
+            self.resetUndoRedoStack()
     
     def zoomPicture(self, accelData):
         x, y, z = accelData[0], accelData[1], accelData[2]
