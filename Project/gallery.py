@@ -175,8 +175,8 @@ class Gallery(QtWidgets.QMainWindow):
 
     def paint(self, x, y):
         pixmap = self.image.pixmap()
-        x -= pixmap.width()
-        y -= pixmap.height()
+        x -= (self.width - pixmap.width())/2
+        y -= (self.image.height() - pixmap.height())/2
         print("paint, x: " + str(x) + " , y: " + str(y))
         pen = QtGui.QPen(QtGui.QColor("red"))
         pen.setWidth(1)
