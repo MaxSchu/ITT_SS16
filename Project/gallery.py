@@ -2,11 +2,8 @@
 # coding: utf-8
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 import glob
-import _thread
-import time
 import wiimote
 import scipy
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -16,7 +13,7 @@ from activity_recognition import GestureRecognizer
 class Gallery(QtWidgets.QMainWindow):
     """
     This Class manages the ui including all animations.
-    
+
     Recognition of swipe gestures are handled by
     the GestureRecognizer in activity_recognition.py
     """
@@ -30,9 +27,9 @@ class Gallery(QtWidgets.QMainWindow):
 
     def __init__(self, width, height):
         super(self.__class__, self).__init__()
-        
+
         self.initUI(width, height)
-        
+        self.initPen()
         self.drawingPixmap = None
         self.list = []
         self.count = 0
@@ -41,7 +38,7 @@ class Gallery(QtWidgets.QMainWindow):
         self.signal.connect(self.animate)
         self.initWiimote(self.defaultWiiMac)
         gr = GestureRecognizer(self.gestureAction, self.wm)
-        
+
         self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
         self.currentPixmapIndex = 0
 
@@ -66,7 +63,7 @@ class Gallery(QtWidgets.QMainWindow):
         self.imageWidth = width / 10 * 9
         self.arrowWidth = 10
         self.arrowHeight = 20
-        self.arrowY = self.imageHeight - ((self.heightPadding - self.arrowHeight)/2)
+        self.arrowY = self.imageHeight - ((self.heightPadding - self.arrowHeight) / 2)
         self.maxImageCount = width / self.thumbnailWidth
         self.thumbnailPadding = self.thumbnailWidth / self.maxImageCount
 
@@ -108,7 +105,8 @@ class Gallery(QtWidgets.QMainWindow):
                 self.imageCount * self.thumbnailWidth, self.imageHeight, self.thumbnailWidth, self.thumbnailHeight)
             pixmap = QtGui.QPixmap(filename)
             pixmap = pixmap.scaled(
-                self.thumbnailWidth - self.thumbnailPadding, self.thumbnailHeight - self.thumbnailPadding, QtCore.Qt.KeepAspectRatio)
+                self.thumbnailWidth - self.thumbnailPadding,
+                self.thumbnailHeight - self.thumbnailPadding, QtCore.Qt.KeepAspectRatio)
             self.thumbnails[self.imageCount].setPixmap(pixmap)
             self.imageCount += 1
 
@@ -128,7 +126,6 @@ class Gallery(QtWidgets.QMainWindow):
         if self.animationsRunning == 0:
             if (int(direction) == -1):
                 # swipe left
-                print("swipe left")
                 if self.currentIndex < self.imageCount - 1:
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
@@ -142,13 +139,11 @@ class Gallery(QtWidgets.QMainWindow):
                         self.width, 0, self.width, self.imageHeight)
                     self.image.setPixmap(pixmap)
                     self.pixmap = pixmap
-                    print('set pixmap')
                     self.signal.emit(-self.width, True)
                 else:
                     print("Max index reached")
             elif(int(direction) == 1):
                 # swipe right
-                print("swipe right")
                 if self.currentIndex > 0:
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
@@ -162,7 +157,6 @@ class Gallery(QtWidgets.QMainWindow):
                                            self.width, self.imageHeight)
                     self.image.setPixmap(pixmap)
                     self.pixmap = pixmap
-                    print('set pixmap')
                     self.signal.emit(self.width, False)
                 else:
                     print("Minimum index reached")
@@ -188,31 +182,38 @@ class Gallery(QtWidgets.QMainWindow):
 
     def initWiimote(self, wiimoteAddress):
         name = None
-        print(("Connecting to %s (%s)" % (name, wiimoteAddress)))
-        self.wm = wiimote.connect(wiimoteAddress, name)
+        addr = ""
+        if len(sys.argv) == 1:
+            addr = wiimoteAddress
+        elif len(sys.argv) == 2:
+            addr = sys.argv[1]
+            name = None
+        elif len(sys.argv) == 3:
+            addr, name = sys.argv[1:3]
+        print(("Connecting to %s (%s)" % (name, addr)))
+        self.wm = wiimote.connect(addr, name)
         self.wm.ir.register_callback(self.moveCursor)
         self.wm.buttons.register_callback(self.buttonPressed)
-        #self.wm.accelerometer.register_callback(self.transformPicture)
+        # self.wm.accelerometer.register_callback(self.transformPicture)
 
     def buttonPressed(self, changedButtons):
-        #undo redo
+        # undo redo
         for button in changedButtons:
             if(button[0] == 'B' and not button[1]):
                 # B button released
                 if self.painted:
                     self.painted = False
-                    print("len: " + str(len(self.pixmapStack))+ ", index: " + str(self.currentPixmapIndex))
-                    if self.currentPixmapIndex < len(self.pixmapStack)-1:
-                        del self.pixmapStack[-self.currentPixmapIndex+1:]
-                    print("add")
+                    # Overwrite Pixmap stack when a new action is done after a redo
+                    if self.currentPixmapIndex < len(self.pixmapStack) - 1:
+                        del self.pixmapStack[-self.currentPixmapIndex + 1:]
                     self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                     self.currentPixmapIndex += 1
             if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
                 # Minus button released and undo stack is not empty -> undo
-                print("minus")
                 self.currentPixmapIndex -= 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
-            if(button[0] == 'Plus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack)-1)):
+            if(button[0] == 'Plus' and button[1] and len(
+                    self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack) - 1)):
                 # Plus button released and undo stack is not empty -> redo
                 self.currentPixmapIndex += 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
@@ -220,7 +221,6 @@ class Gallery(QtWidgets.QMainWindow):
                 if(button[1]):
                     # 2 button pressed
                     self.wm.accelerometer.register_callback(self.collectData)
-                    #self.collectData()
                 else:
                     # 2 button released
                     self.wm.accelerometer.unregister_callback(self.collectData)
@@ -241,7 +241,8 @@ class Gallery(QtWidgets.QMainWindow):
     def initArrow(self):
         self.arrow = QtWidgets.QLabel(self)
         self.arrow.setAlignment(QtCore.Qt.AlignCenter)
-        self.arrow.setGeometry(self.thumbnailWidth / 2 - self.arrowWidth / 2, self.arrowY, self.arrowWidth, self.arrowHeight)
+        self.arrow.setGeometry(self.thumbnailWidth / 2 - self.arrowWidth / 2,
+                               self.arrowY, self.arrowWidth, self.arrowHeight)
         self.arrow.setPixmap(QtGui.QPixmap(("arrow.png")).scaledToHeight(20))
 
     def resetUndoRedoStack(self):
@@ -272,18 +273,21 @@ class Gallery(QtWidgets.QMainWindow):
 
     def paint(self, x, y):
         self.drawingPixmap = self.image.pixmap()
-        x -= (self.width - self.drawingPixmap.width())/2
-        y -= (self.image.height() - self.drawingPixmap.height())/2
-        pen = QtGui.QPen(QtGui.QColor("red"))
-        pen.setWidth(1)
+        # remove offset to match cursor with image coordinates
+        x -= (self.width - self.drawingPixmap.width()) / 2
+        y -= (self.image.height() - self.drawingPixmap.height()) / 2
         painter = QtGui.QPainter()
         painter.begin(self.drawingPixmap)
         painter.setBrush(QtGui.QColor("red"))
-        painter.setPen(pen)
+        painter.setPen(self.pen)
         painter.drawEllipse(x, y, 10, 10)
         painter.end()
         self.painted = True
         self.image.setPixmap(self.drawingPixmap)
+
+    def initPen(self):
+        self.pen = QtGui.QPen(QtGui.QColor("red"))
+        self.pen.setWidth(1)
 
     def animationFinished(self, newState, oldState):
         if newState == QtCore.QAbstractAnimation.Stopped and oldState == QtCore.QAbstractAnimation.Running:
@@ -297,8 +301,8 @@ class Gallery(QtWidgets.QMainWindow):
     def collectData(self, accelData):
         if self.count < 32:
             self.count += 1
-            x, y, z = accelData[0], accelData[1], accelData[2]
-            rot_angle = int(-(scipy.degrees(scipy.arctan2(z-512, x-512)) - 90))
+            x, z = accelData[0], accelData[2]
+            rot_angle = int(- (scipy.degrees(scipy.arctan2(z - 512, x - 512)) - 90))
             self.list.append(rot_angle)
         else:
             self.transformPicture(accelData)
@@ -312,29 +316,23 @@ class Gallery(QtWidgets.QMainWindow):
         left = self.list[0]
         right = self.list[-1]
         # counter-clockwise
-        print('left: '+str(left)+' right: '+str(right))
         if left > right:
             return -1
         # clockwise
-        elif right > left: 
+        elif right > left:
             return 1
         else:
             return 0
-            
+
     def transformPicture(self, accelData):
         # rotate
         if True:
-            x, y, z = accelData[0], accelData[1], accelData[2]
-            offset = 512    
-            centeredZ = z - offset
-            centeredX = x - offset
             angle = self.curAngle
-            print('sector: '+str(angle))
             direction = self.getDirection()
             for i in range(45):
-                angle += (direction*2)
-                #print('ang: '+str(angle))
-                self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(angle), QtCore.Qt.SmoothTransformation))
+                angle += (direction * 2)
+                self.image.setPixmap(self.pixmap.transformed(
+                    QtGui.QTransform().rotate(angle), QtCore.Qt.SmoothTransformation))
             self.curAngle = angle
             self.drawingPixmap = self.image.pixmap()
             self.resetUndoRedoStack()
@@ -342,33 +340,32 @@ class Gallery(QtWidgets.QMainWindow):
             self.zoomPicture(accelData)
             self.drawingPixmap = self.image.pixmap()
             self.resetUndoRedoStack()
- 
-    ###### not used anymore!!! #####
+
+    # not used anymore!!!
     def getSector(self, angle):
         base = 90
-        return int(base * round(float(angle)/base))
-    
+        return int(base * round(float(angle) / base))
+
     def zoomPicture(self, accelData):
-        x, y, z = accelData[0], accelData[1], accelData[2]
-        offset = 512  
+        y, z = accelData[1], accelData[2]
+        offset = 512
         centeredZ = z - offset
         centeredY = y - offset
 
         tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
-        print('tilt_angle: '+str(tilt_angle))
         if tilt_angle <= -90:
-            tilt_angle = 360 + tilt_angle 
+            tilt_angle = 360 + tilt_angle
         scale_val = (tilt_angle / 100) + 1
         if scale_val < 0:
-            scale_val = - scale_val 
-        print('tilt_angle: '+str(tilt_angle)+ ' scale_val: '+str(scale_val))
-        self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val),QtCore.Qt.SmoothTransformation))  
+            scale_val = - scale_val
+        self.image.setPixmap(self.pixmap.transformed(
+            QtGui.QTransform().scale(scale_val, scale_val), QtCore.Qt.SmoothTransformation))
         self.drawingPixmap = self.image.pixmap()
-        self.resetUndoRedoStack() 
+        self.resetUndoRedoStack()
 
     def get_sector(self, rot_angle):
         base = 45
-        return int(base * round(float(rot_angle)/base))
+        return int(base * round(float(rot_angle) / base))
 
     def setThumbnailPixmap(self, thumb, pixmap):
         if pixmap is not None:
@@ -380,7 +377,8 @@ class Gallery(QtWidgets.QMainWindow):
     def savePixMap(self, pixmap):
         if pixmap is not None:
             pixmap.save(self.filenames[self.currentIndex], "png")
-        
+
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
     screen = QtWidgets.QDesktopWidget().availableGeometry()
