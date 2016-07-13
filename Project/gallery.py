@@ -8,6 +8,7 @@ import glob
 import _thread
 import time
 import wiimote
+import scipy
 from PyQt5 import QtGui, QtCore, QtWidgets
 from activity_recognition import GestureRecognizer
 
@@ -51,6 +52,7 @@ class Gallery(QtWidgets.QMainWindow):
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
                 self.image.setPixmap(pixmap)
+                self.pixmap = pixmap
             self.thumbnails.append(QtWidgets.QLabel(self))
             self.thumbnails[self.count].setAlignment(QtCore.Qt.AlignCenter)
             self.thumbnails[self.count].setGeometry(
@@ -90,6 +92,8 @@ class Gallery(QtWidgets.QMainWindow):
                     self.image.setGeometry(
                         self.width, 0, self.width, self.imageHeight)
                     self.image.setPixmap(pixmap)
+                    self.pixmap = pixmap
+                    print('set pixmap')
                     self.signal.emit(-self.width)
                 else:
                     print("Max index reached")
@@ -104,6 +108,8 @@ class Gallery(QtWidgets.QMainWindow):
                     self.image.setGeometry(-self.width, 0,
                                            self.width, self.imageHeight)
                     self.image.setPixmap(pixmap)
+                    self.pixmap = pixmap
+                    print('set pixmap')
                     self.signal.emit(self.width)
                 else:
                     print("Minimum index reached")
@@ -123,8 +129,9 @@ class Gallery(QtWidgets.QMainWindow):
         name = None
         print(("Connecting to %s (%s)" % (name, wiimoteAddress)))
         self.wm = wiimote.connect(wiimoteAddress, name)
-        self.wm.ir.register_callback(self.moveCursor)
+        #self.wm.ir.register_callback(self.moveCursor)
         self.wm.buttons.register_callback(self.buttonPressed)
+        self.wm.accelerometer.register_callback(self.transformPicture)
 
     def buttonPressed(self, changedButtons):
         for button in changedButtons:
@@ -145,7 +152,6 @@ class Gallery(QtWidgets.QMainWindow):
                 self.currentPixmapIndex += 1
                 print(self.currentPixmapIndex, self.pixmapStack)
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
-        
 
     def initCursor(self):
         self.cursor = QtWidgets.QLabel(self)
@@ -175,6 +181,7 @@ class Gallery(QtWidgets.QMainWindow):
 
     def paint(self, x, y):
         pixmap = self.image.pixmap()
+        print(pixmap)
         x -= (self.width - pixmap.width())/2
         y -= (self.image.height() - pixmap.height())/2
         print("paint, x: " + str(x) + " , y: " + str(y))
@@ -196,7 +203,40 @@ class Gallery(QtWidgets.QMainWindow):
                 self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                 self.currentPixmapIndex = 0
 
+    def transformPicture(self, accelData):
+        # rotate
+        if self.wm.buttons['A']:
+            x, y, z = accelData[0], accelData[1], accelData[2]
+            offset = 512    
+            centeredZ = z - offset
+            centeredX = x - offset
+            rot_angle = int(-(scipy.degrees(scipy.arctan2(centeredZ, centeredX)) - 90))
+            if rot_angle < 0:
+               rot_angle = 360 + rot_angle
+            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle), 1))
+        elif self.wm.buttons['Down']:
+            self.zoomPicture(accelData)
+    
+    def zoomPicture(self, accelData):
+        x, y, z = accelData[0], accelData[1], accelData[2]
+        offset = 512  
+        centeredZ = z - offset
+        centeredY = y - offset
 
+        tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
+        print('tilt_angle: '+str(tilt_angle))
+        if tilt_angle <= -90:
+            tilt_angle = 360 + tilt_angle 
+        scale_val = (tilt_angle / 100) + 1
+        if scale_val < 0:
+            scale_val = - scale_val 
+        print('tilt_angle: '+str(tilt_angle)+ ' scale_val: '+str(scale_val))
+        self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().scale(scale_val, scale_val),1))   
+
+    def get_sector(self, rot_angle):
+        base = 45
+        return int(base * round(float(rot_angle)/base))
+        
 def main():
     app = QtWidgets.QApplication(sys.argv)
     screen = QtWidgets.QDesktopWidget().availableGeometry()
