@@ -14,7 +14,7 @@ from activity_recognition import GestureRecognizer
 
 
 class Gallery(QtWidgets.QMainWindow):
-    defaultWiiMac = "B8:AE:6E:18:3A:ED"
+    defaultWiiMac = "B8:AE:6E:50:05:32"
     startPos = None
     signal = QtCore.pyqtSignal(int, bool)
     pixmapStack = []
@@ -161,7 +161,10 @@ class Gallery(QtWidgets.QMainWindow):
                 else:
                     print("B released")
                     if self.painted:
+                        print("in here")
                         self.painted = False
+                        if self.currentPixmapIndex < len(self.pixmapStack)-1:
+                            del self.pixmapStack[-self.currentPixmapIndex:]
                         self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                         self.currentPixmapIndex += 1
             if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
