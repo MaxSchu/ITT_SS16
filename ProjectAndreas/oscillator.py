@@ -5,12 +5,14 @@ matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+from scipy import signal
 from PyQt5.QtCore import pyqtSignal, QObject
 
 
 class Oscillator(QObject):
     class UIElement(Enum):
-        X_AXIS, Y_AXIS, Z_AXIS, SINE, SQUARE, SAW, TRI, NOISE, PLOT = range(9)
+        X_AXIS, Y_AXIS, Z_AXIS, SINE, SQUARE, SAW, TRI, NOISE, PLOT, DOWNSAMPLE, STRETCH, ENABLED = range(
+            12)
 
     class Waveform(Enum):
         SINE, SQUARE, SAW, TRI, NOISE = range(5)
@@ -26,8 +28,11 @@ class Oscillator(QObject):
         self.updatePlot[object].connect(self.setPlot)
         self.index = index
         self.plot = None
+        self.stretchRate = 1
+        self.dsRate = 0
+        self.currentWave = None
         self.rawData = {}
-        self.processedData = None
+        self.processedData = {}
         self.currentAxis = None
         self.currentWaveform = None
         self.uiElements = None
@@ -41,19 +46,22 @@ class Oscillator(QObject):
                                self.UIElement.Z_AXIS: ui.z_radio_1, self.UIElement.SINE: ui.sine_radio_1,
                                self.UIElement.TRI: ui.tri_radio_1, self.UIElement.SQUARE: ui.square_radio_1,
                                self.UIElement.SAW: ui.saw_radio_1, self.UIElement.NOISE: ui.noise_radio_1,
-                               self.UIElement.PLOT: ui.osc_plot_1}
+                               self.UIElement.PLOT: ui.osc_plot_1, self.UIElement.DOWNSAMPLE: ui.downsample_1,
+                               self.UIElement.STRETCH: ui.stretch_1, self.UIElement.ENABLED: ui.osc_enabled_1}
         elif self.index == 1:
             self.uiElements = {self.UIElement.X_AXIS: ui.x_radio_2, self.UIElement.Y_AXIS: ui.y_radio_2,
                                self.UIElement.Z_AXIS: ui.z_radio_2, self.UIElement.SINE: ui.sine_radio_2,
                                self.UIElement.TRI: ui.tri_radio_2, self.UIElement.SQUARE: ui.square_radio_2,
                                self.UIElement.SAW: ui.saw_radio_2, self.UIElement.NOISE: ui.noise_radio_2,
-                               self.UIElement.PLOT: ui.osc_plot_2}
+                               self.UIElement.PLOT: ui.osc_plot_2, self.UIElement.DOWNSAMPLE: ui.downsample_2,
+                               self.UIElement.STRETCH: ui.stretch_2, self.UIElement.ENABLED: ui.osc_enabled_2}
         elif self.index == 2:
             self.uiElements = {self.UIElement.X_AXIS: ui.x_radio_3, self.UIElement.Y_AXIS: ui.y_radio_3,
                                self.UIElement.Z_AXIS: ui.z_radio_3, self.UIElement.SINE: ui.sine_radio_3,
                                self.UIElement.TRI: ui.tri_radio_3, self.UIElement.SQUARE: ui.square_radio_3,
                                self.UIElement.SAW: ui.saw_radio_3, self.UIElement.NOISE: ui.noise_radio_3,
-                               self.UIElement.PLOT: ui.osc_plot_3}
+                               self.UIElement.PLOT: ui.osc_plot_3, self.UIElement.DOWNSAMPLE: ui.downsample_3,
+                               self.UIElement.STRETCH: ui.stretch_3, self.UIElement.ENABLED: ui.osc_enabled_3}
 
         self.setDefaultValues()
         self.setPlot(np.zeros(100))
@@ -61,17 +69,38 @@ class Oscillator(QObject):
 
     def setupButtonSignals(self):
         # set accelerator axis
-        self.uiElements[self.UIElement.X_AXIS].clicked.connect(lambda ignore, x=self.Axis.X: self.setAxis(x))
-        self.uiElements[self.UIElement.Y_AXIS].clicked.connect(lambda ignore, x=self.Axis.Y: self.setAxis(x))
-        self.uiElements[self.UIElement.Z_AXIS].clicked.connect(lambda ignore, x=self.Axis.Z: self.setAxis(x))
+        self.uiElements[self.UIElement.X_AXIS].clicked.connect(
+            lambda ignore, x=self.Axis.X: self.setAxis(x))
+        self.uiElements[self.UIElement.Y_AXIS].clicked.connect(
+            lambda ignore, x=self.Axis.Y: self.setAxis(x))
+        self.uiElements[self.UIElement.Z_AXIS].clicked.connect(
+            lambda ignore, x=self.Axis.Z: self.setAxis(x))
 
         # set waveform
-        self.uiElements[self.UIElement.SINE].clicked.connect(lambda ignore, x=self.Waveform.SINE: self.setWaveform(x))
-        self.uiElements[self.UIElement.TRI].clicked.connect(lambda ignore, x=self.Waveform.TRI: self.setWaveform(x))
+        self.uiElements[self.UIElement.SINE].clicked.connect(
+            lambda ignore, x=self.Waveform.SINE: self.setWaveform(x))
+        self.uiElements[self.UIElement.TRI].clicked.connect(
+            lambda ignore, x=self.Waveform.TRI: self.setWaveform(x))
         self.uiElements[self.UIElement.SQUARE].clicked.connect(
             lambda ignore, x=self.Waveform.SQUARE: self.setWaveform(x))
-        self.uiElements[self.UIElement.SAW].clicked.connect(lambda ignore, x=self.Waveform.SAW: self.setWaveform(x))
-        self.uiElements[self.UIElement.NOISE].clicked.connect(lambda ignore, x=self.Waveform.NOISE: self.setWaveform(x))
+        self.uiElements[self.UIElement.SAW].clicked.connect(
+            lambda ignore, x=self.Waveform.SAW: self.setWaveform(x))
+        self.uiElements[self.UIElement.NOISE].clicked.connect(
+            lambda ignore, x=self.Waveform.NOISE: self.setWaveform(x))
+
+        # set sliders
+        self.uiElements[self.UIElement.DOWNSAMPLE].valueChanged[
+            int].connect(self.downsample)
+        self.uiElements[self.UIElement.STRETCH].valueChanged[
+            int].connect(self.stretch)
+
+    def downsample(self, rate):
+        self.dsRate = rate
+        self.createWaveform()
+
+    def stretch(self, rate):
+        self.stretchRate = rate
+        self.createWaveform()
 
     def setDefaultValues(self):
         if self.uiElements[self.UIElement.X_AXIS].isChecked():
@@ -92,7 +121,7 @@ class Oscillator(QObject):
 
     def setData(self, data):
         self.rawData = data
-        self.updatePlot.emit(np.asarray(data))
+        self.createWaveform()
 
     def calculateMaxFFT(self):
         if len(self.rawData) == 0:
@@ -103,23 +132,63 @@ class Oscillator(QObject):
         try:
             data = np.split(data, 2)[0]
         except ValueError:
-            data = np.split(data.append([0]), 2)[0]
+            data = np.split(np.append(data, [0]), 2)[0]
         peakFrequency = np.where(data == np.amax(data))[0]
-        self.createWaveform(peakFrequency)
+        return peakFrequency
 
-    def createWaveform(self, frequency):
+    def createWaveform(self):
+        if len(self.rawData) == 0:
+            return
+
+        frequency = self.calculateMaxFFT()
+        fs = 44100
+        duration = 1.0
+        f = frequency[0]
+
         if self.currentWaveform == self.Waveform.SINE:
-            x = np.array(100)
-            sinewave = np.sin(2 * np.pi * 5 * x / 44100)
-            self.updatePlot.emit(sinewave)
-            plt.plot(x, sinewave)
-            plt.show()
+            wave = (np.sin(2 * np.pi * np.arange(fs * duration) *
+                           f / fs)).astype(np.float32)
+            wave = self.downsampleWave(wave)
+            wave = self.stretchWave(wave)
+
         elif self.currentWaveform == self.Waveform.SAW:
-            pass
+            wave = (signal.sawtooth(2 * np.pi * np.arange(fs * duration) *
+                                    f / fs)).astype(np.float32)
+            wave = self.downsampleWave(wave)
+            wave = self.stretchWave(wave)
+
         elif self.currentWaveform == self.Waveform.SQUARE:
-            pass
+            wave = (signal.square(2 * np.pi * np.arange(fs * duration) *
+                                  f / fs)).astype(np.float32)
+            wave = self.downsampleWave(wave)
+            wave = self.stretchWave(wave)
+
         elif self.currentWaveform == self.Waveform.TRI:
-            pass
+            wave = (signal.sawtooth(2 * np.pi * np.arange(fs * duration) *
+                                    f / fs, 0.5)).astype(np.float32)
+            wave = self.downsampleWave(wave)
+            wave = self.stretchWave(wave)
+
+        else:
+            wave = self.downsampleWave(np.asarray(self.rawData))
+            wave = self.stretchWave(wave)
+
+        self.currentWave = wave
+        self.updatePlot.emit(wave)
+
+    def downsampleWave(self, wave):
+        if self.dsRate > 0:
+            return signal.decimate(wave, self.dsRate)
+        else:
+            return wave
+
+    def stretchWave(self, wave):
+        for i in range(0, self.stretchRate):
+            wave = np.append(wave, wave)
+        return wave
+
+    def isEnabled(self):
+        return self.uiElements[self.UIElement.ENABLED].isChecked
 
     def setPlot(self, data):
         figure = Figure()
@@ -138,7 +207,7 @@ class Oscillator(QObject):
 
     def setWaveform(self, waveform):
         self.currentWaveform = waveform
-        self.calculateMaxFFT()
+        self.createWaveform()
 
     def getAxis(self):
         if self.currentAxis == self.Axis.X:
