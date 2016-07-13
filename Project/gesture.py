@@ -2,7 +2,6 @@
 # coding: utf-8
 # -*- coding: utf-8 -*-
 
-import csv
 
 class WiiGesture():
     """
@@ -11,7 +10,7 @@ class WiiGesture():
     """
     path = "training_samples/"
 
-    def __init__(self, name = ""):
+    def __init__(self, name=""):
         self.name = name
         self.trainingsData = []
         self.frequencies = []
@@ -31,9 +30,8 @@ class WiiGesture():
         self.trainingsData.append(data)
 
     def dataToCSV(self, data):
-        #method to store training data into csv
+        # method to store training data into csv
         csv = open("training_samples/" + self.name + "_" + str(len(self.trainingsData) - 1) + ".csv", "w")
         for values in data:
             csv.write(self.name + "," + str(values[0]) + "," + str(values[1]) + "," + str(values[2]) + "\n")
         csv.close()
-
