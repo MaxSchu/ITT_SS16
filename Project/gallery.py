@@ -109,9 +109,9 @@ class Gallery(QtWidgets.QMainWindow):
                     print("Max index reached")
             elif(str(action) == "left"):
                 if self.currentIndex > 0:
-                    self.currentIndex -= 1
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
+                    self.currentIndex -= 1
                     pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                     pixmap = pixmap.scaled(
                         self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -154,14 +154,11 @@ class Gallery(QtWidgets.QMainWindow):
         self.wm.accelerometer.register_callback(self.transformPicture)
 
     def buttonPressed(self, changedButtons):
+        #undo redo
         for button in changedButtons:
             if(button[0] == 'B'):
-                if(button[1]):
-                    print("B pressed")
-                else:
-                    print("B released")
+                if not button[1]:
                     if self.painted:
-                        print("in here")
                         self.painted = False
                         if self.currentPixmapIndex < len(self.pixmapStack)-1:
                             del self.pixmapStack[-self.currentPixmapIndex:]
@@ -169,11 +166,9 @@ class Gallery(QtWidgets.QMainWindow):
                         self.currentPixmapIndex += 1
             if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
                 self.currentPixmapIndex -= 1
-                print(self.currentPixmapIndex, self.pixmapStack)
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
             if(button[0] == 'Plus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack)-1)):
                 self.currentPixmapIndex += 1
-                print(self.currentPixmapIndex, self.pixmapStack)
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
 
     def initCursor(self):
@@ -242,6 +237,7 @@ class Gallery(QtWidgets.QMainWindow):
             if rot_angle < 0:
                rot_angle = 360 + rot_angle
             self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle), 1))
+            self.drawingPixmap = self.image.pixmap()
         elif self.wm.buttons['Down']:
             self.zoomPicture(accelData)
     
