@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="osc1_tab">
      <attribute name="title">
@@ -780,25 +780,6 @@
         <string notr="true">btn_group_axis_osc3</string>
        </attribute>
       </widget>
-      <widget class="QSlider" name="stretch_3">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>330</y>
-         <width>291</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
       <widget class="QSlider" name="downsample_3">
        <property name="geometry">
         <rect>
@@ -848,6 +829,25 @@
        </property>
        <property name="text">
         <string>Downsampling</string>
+       </property>
+      </widget>
+      <widget class="QSlider" name="stretch_3">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>330</y>
+         <width>291</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </widget>
@@ -914,9 +914,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>470</x>
       <y>540</y>
-      <width>181</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
@@ -943,14 +943,72 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>670</x>
       <y>540</y>
-      <width>181</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>Play</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>530</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sample Rate:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="sample_rate">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>550</y>
+      <width>113</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>25</string>
+    </property>
+    <property name="maxLength">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="smoothing">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>550</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Smoothing</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="preview">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>540</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Preview</string>
     </property>
    </widget>
   </widget>
@@ -1018,11 +1076,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="btn_group_wave_osc1"/>
-  <buttongroup name="btn_group_axis_osc3"/>
   <buttongroup name="btn_group_axis_osc2"/>
-  <buttongroup name="btn_group_axis_osc1"/>
   <buttongroup name="btn_group_wave_osc2"/>
+  <buttongroup name="btn_group_axis_osc1"/>
   <buttongroup name="btn_group_wave_osc3"/>
+  <buttongroup name="btn_group_axis_osc3"/>
+  <buttongroup name="btn_group_wave_osc1"/>
  </buttongroups>
 </ui>
