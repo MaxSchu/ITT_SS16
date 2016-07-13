@@ -33,7 +33,6 @@ class WiiGestureClassifier():
         self.getFrequencies()
         self.buildClassifier()
 
-
     def parseArrays(self, data):
         parsedData = []
         for gesture in data:
@@ -48,12 +47,12 @@ class WiiGestureClassifier():
         y = []
         z = []
         avg = []
-        #Use the difference from default sensor value
+        # Use the difference from default sensor value
         for values in dataSet:
-            x.append(values[0]-512)
-            y.append(values[1]-512)
-            z.append(values[2]-512)
-            avg.append((values[0]-512 + values[1]-512 + values[2]-512) / 3)
+            x.append(values[0] - 512)
+            y.append(values[1] - 512)
+            z.append(values[2] - 512)
+            avg.append((values[0] - 512 + values[1] - 512 + values[2] - 512) / 3)
         return avg
 
     def calcMinLength(self):
@@ -100,7 +99,7 @@ class WiiGestureClassifier():
         return self.c.predict(parsedGesture.frequencies[0])
 
     def checkListForEmpty(self):
-        #checks for empty gestures and exits code
+        # checks for empty gestures and exits code
         if len(self.parsedGestureList) <= 0:
             return True
         for gesture in self.parsedGestureList:
