@@ -19,6 +19,7 @@ class Gallery(QtWidgets.QMainWindow):
 
     def __init__(self, width, height):
         super(self.__class__, self).__init__()
+        self.drawingPixmap = None
         # fix for hidden lower bar
         height -= 30
         self.width = width
@@ -66,10 +67,12 @@ class Gallery(QtWidgets.QMainWindow):
 
     def gestureAction(self, action):
         print(str(action))
+        print(str(self.currentIndex))
         if (str(action) == "right"):
             if self.currentIndex < self.count - 1:
-                self.currentIndex += 1
+                self.savePixMap(self.drawingPixmap)
                 self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
+                self.currentIndex += 1
                 pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -83,8 +86,9 @@ class Gallery(QtWidgets.QMainWindow):
                 print("Max index reached")
         elif(str(action) == "left"):
             if self.currentIndex > 0:
-                self.currentIndex -= 1
+                self.savePixMap(self.drawingPixmap)
                 self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
+                self.currentIndex -= 1
                 pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                 pixmap = pixmap.scaled(
                     self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -147,7 +151,6 @@ class Gallery(QtWidgets.QMainWindow):
         self.drawingPixmap = self.image.pixmap()
         x -= (self.width - self.drawingPixmap.width())/2
         y -= (self.image.height() - self.drawingPixmap.height())/2
-        print("paint, x: " + str(x) + " , y: " + str(y))
         pen = QtGui.QPen(QtGui.QColor("red"))
         pen.setWidth(1)
         painter = QtGui.QPainter()
@@ -159,9 +162,15 @@ class Gallery(QtWidgets.QMainWindow):
         self.image.setPixmap(self.drawingPixmap)
 
     def setThumbnailPixmap(self, thumb, pixmap):
-        pixmap = pixmap.scaled(
-                self.thumbnailWidth, self.thumbnailHeight, QtCore.Qt.KeepAspectRatio)
-        thumb.setPixmap(pixmap)
+        if pixmap is not None:
+            pixmap = pixmap.scaled(
+                    self.thumbnailWidth, self.thumbnailHeight, QtCore.Qt.KeepAspectRatio)
+            thumb.setPixmap(pixmap)
+            self.drawingPixmap = None
+
+    def savePixMap(self, pixmap):
+        if pixmap is not None:
+            pixmap.save(self.filenames[self.currentIndex], "png")
 
 
 def main():
