@@ -202,7 +202,7 @@ class Oscillator(QObject):
         return wave
 
     def isEnabled(self):
-        return self.uiElements[self.UIElement.ENABLED].isChecked
+        return self.uiElements[self.UIElement.ENABLED].isChecked()
 
     def setPlot(self, data):
         figure = Figure()

@@ -82,9 +82,19 @@ class Synthesizer(QtWidgets.QMainWindow):
 
     def createWaveform(self):
         waves = []
-        waves.append(self.oscillators[0].currentWave)
-        waves.append(self.oscillators[1].currentWave)
-        waves.append(self.oscillators[2].currentWave)
+
+        if self.oscillators[0].isEnabled():
+            waves.append(self.oscillators[0].currentWave)
+        else:
+            waves.append([0])
+        if self.oscillators[1].isEnabled():
+            waves.append(self.oscillators[1].currentWave)
+        else:
+            waves.append([0])
+        if self.oscillators[2].isEnabled():
+            waves.append(self.oscillators[2].currentWave)
+        else:
+            waves.append([0])
 
         maxLength = max([len(waves[0]), len(waves[1]), len(waves[2])])
         if len(waves[0]) < maxLength:
@@ -94,7 +104,15 @@ class Synthesizer(QtWidgets.QMainWindow):
         if len(waves[2]) < maxLength:
             waves[2] = np.append(waves[2], np.zeros(maxLength - len(waves[2])))
 
-        addedWave = waves[0] + waves[1] + waves[2]
+        addedWave = np.zeros(maxLength)
+
+        if self.oscillators[0].isEnabled():
+            addedWave = addedWave + waves[0]
+        if self.oscillators[1].isEnabled():
+            addedWave = addedWave + waves[1]
+        if self.oscillators[2].isEnabled():
+            addedWave = addedWave + waves[2]
+
         return addedWave
 
 
