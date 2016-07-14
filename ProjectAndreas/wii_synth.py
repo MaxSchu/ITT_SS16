@@ -1,5 +1,6 @@
 import sys
 import time
+import pyaudio
 import wiimote
 import bluetooth
 import numpy as np
@@ -16,6 +17,7 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('mainwindow.ui', self)
         self.wm = None
         self.oscillators = []
+        self.sampleRate = 0
         self.setupUI()
         self.initOscillators()
 
@@ -23,6 +25,8 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.ui.bt_connect.clicked.connect(self.connectToWiimote)
         self.ui.record.clicked.connect(self.openRecordingPopup)
         self.ui.play.clicked.connect(self.playSound)
+        self.ui.preview.clicked.connect(self.showPreview)
+        self.sampleRate = int(self.ui.sample_rate.text())
 
     def connectToWiimote(self):
         """Connect to WiiMote via Bluetooth"""
@@ -42,24 +46,47 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.ui.osc_tabs.setEnabled(enabled)
         self.ui.record.setEnabled(enabled)
         self.ui.play.setEnabled(enabled)
+        self.ui.preview.setEnabled(enabled)
+        self.ui.stretch_3.setEnabled(enabled)
 
     def openRecordingPopup(self):
         self.ui.setEnabled(False)
-        popup = RecordingPopup(self)
+        self.sampleRate = int(self.ui.sample_rate.text())
+        popup = RecordingPopup(self, self.sampleRate)
         popup.show()
 
     def initOscillators(self):
         for i in range(0, 3):
-            self.oscillators.append(osc.Oscillator(i, self.ui))
+            self.oscillators.append(osc.Oscillator(i, self))
 
     def playSound(self):
+        p = pyaudio.PyAudio()
+        wave = self.createWaveform()
+        stream = p.open(format=pyaudio.paFloat32,
+                        channels=1,
+                        rate=44100,
+                        output=True)
+
+        while not self.wm.buttons["A"]:
+            stream.write(wave)
+
+        stream.stop_stream()
+        stream.close()
+
+        p.terminate()
+
+    def showPreview(self):
+        wave = self.createWaveform()
+        plt.plot(wave)
+        plt.show()
+
+    def createWaveform(self):
         waves = []
         waves.append(self.oscillators[0].currentWave)
         waves.append(self.oscillators[1].currentWave)
         waves.append(self.oscillators[2].currentWave)
 
         maxLength = max([len(waves[0]), len(waves[1]), len(waves[2])])
-        print(maxLength)
         if len(waves[0]) < maxLength:
             waves[0] = np.append(waves[0], np.zeros(maxLength - len(waves[0])))
         if len(waves[1]) < maxLength:
@@ -68,18 +95,18 @@ class Synthesizer(QtWidgets.QMainWindow):
             waves[2] = np.append(waves[2], np.zeros(maxLength - len(waves[2])))
 
         addedWave = waves[0] + waves[1] + waves[2]
-        plt.plot(addedWave)
-        plt.show()
+        return addedWave
 
 
 class RecordingPopup(QtWidgets.QMainWindow):
     """Ui-popup which allows to record and name gestures"""
 
-    def __init__(self, parent):
+    def __init__(self, parent, sampleRate):
         super(self.__class__, self).__init__()
         self.parent = parent
         self.wm = parent.wm
         self.dataSets = []
+        self.delay = 1 / sampleRate
         self.ui = uic.loadUi('recordingpopup.ui', self)
         start_new_thread(self.recordGestures, ())
 
@@ -97,7 +124,7 @@ class RecordingPopup(QtWidgets.QMainWindow):
         self.close()
 
     def recordGestures(self):
-        """Executed in a thread. Records data while the a button on the WiiMote
+        """Executed in a thread. Records data while the "A" button on the WiiMote
         is pressed"""
         isRecording = False
         currentRecordX = []
@@ -118,7 +145,7 @@ class RecordingPopup(QtWidgets.QMainWindow):
                     currentRecordX.append(normalized[0])
                     currentRecordZ.append(normalized[1])
                     currentRecordY.append(normalized[2])
-                time.sleep(0.04)
+                time.sleep(self.delay)
             elif isRecording:
                 self.saveData([currentRecordX, currentRecordY, currentRecordZ])
 

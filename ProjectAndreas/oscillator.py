@@ -22,13 +22,14 @@ class Oscillator(QObject):
 
     updatePlot = pyqtSignal(object)
 
-    def __init__(self, index, ui):
+    def __init__(self, index, synth):
         super(self.__class__, self).__init__()
-        self.ui = ui
+        self.ui = synth.ui
         self.updatePlot[object].connect(self.setPlot)
         self.index = index
         self.plot = None
-        self.stretchRate = 1
+        self.stretchRate = 0
+        self.synth = synth
         self.dsRate = 0
         self.currentWave = None
         self.rawData = {}
@@ -94,6 +95,8 @@ class Oscillator(QObject):
         self.uiElements[self.UIElement.STRETCH].valueChanged[
             int].connect(self.stretch)
 
+        self.ui.smoothing.clicked.connect(self.createWaveform)
+
     def downsample(self, rate):
         self.dsRate = rate
         self.createWaveform()
@@ -123,11 +126,11 @@ class Oscillator(QObject):
         self.rawData = data
         self.createWaveform()
 
-    def calculateMaxFFT(self):
-        if len(self.rawData) == 0:
+    def calculateMaxFFT(self, values):
+        if len(self.rawData) == 0 or len(values) == 0:
             return
 
-        data = np.absolute(np.fft.fft(np.asarray(self.rawData)))
+        data = np.absolute(np.fft.fft(values))
         data[0] = 0
         try:
             data = np.split(data, 2)[0]
@@ -140,37 +143,47 @@ class Oscillator(QObject):
         if len(self.rawData) == 0:
             return
 
-        frequency = self.calculateMaxFFT()
-        fs = 44100
-        duration = 1.0
+        if self.ui.smoothing.isChecked():
+            window = self.synth.sampleRate / 5
+            if window % 2 != 1:
+                window = window + 1
+
+            self.computedData = signal.savgol_filter(
+                np.asarray(self.rawData), window, 2)
+        else:
+            self.computedData = self.rawData
+
+        frequency = self.calculateMaxFFT(self.computedData)
+        fs = self.synth.sampleRate
+        duration = len(self.rawData) / self.synth.sampleRate
         f = frequency[0]
 
         if self.currentWaveform == self.Waveform.SINE:
+            duration = duration * (self.stretchRate + 1)
             wave = (np.sin(2 * np.pi * np.arange(fs * duration) *
                            f / fs)).astype(np.float32)
             wave = self.downsampleWave(wave)
-            wave = self.stretchWave(wave)
 
         elif self.currentWaveform == self.Waveform.SAW:
+            duration = duration * (self.stretchRate + 1)
             wave = (signal.sawtooth(2 * np.pi * np.arange(fs * duration) *
                                     f / fs)).astype(np.float32)
             wave = self.downsampleWave(wave)
-            wave = self.stretchWave(wave)
 
         elif self.currentWaveform == self.Waveform.SQUARE:
+            duration = duration * (self.stretchRate + 1)
             wave = (signal.square(2 * np.pi * np.arange(fs * duration) *
                                   f / fs)).astype(np.float32)
             wave = self.downsampleWave(wave)
-            wave = self.stretchWave(wave)
 
         elif self.currentWaveform == self.Waveform.TRI:
+            duration = duration * (self.stretchRate + 1)
             wave = (signal.sawtooth(2 * np.pi * np.arange(fs * duration) *
                                     f / fs, 0.5)).astype(np.float32)
             wave = self.downsampleWave(wave)
-            wave = self.stretchWave(wave)
 
         else:
-            wave = self.downsampleWave(np.asarray(self.rawData))
+            wave = self.downsampleWave(np.asarray(self.computedData))
             wave = self.stretchWave(wave)
 
         self.currentWave = wave
@@ -183,8 +196,9 @@ class Oscillator(QObject):
             return wave
 
     def stretchWave(self, wave):
+        originalWave = wave
         for i in range(0, self.stretchRate):
-            wave = np.append(wave, wave)
+            wave = np.append(wave, originalWave)
         return wave
 
     def isEnabled(self):

@@ -14,6 +14,7 @@ from activity_recognition import GestureRecognizer
 
 
 class Gallery(QtWidgets.QMainWindow):
+
     defaultWiiMac = "B8:AE:6E:1B:AD:A0"
     startPos = None
     signal = QtCore.pyqtSignal(int, bool)
@@ -109,9 +110,9 @@ class Gallery(QtWidgets.QMainWindow):
                     print("Max index reached")
             elif(str(action) == "left"):
                 if self.currentIndex > 0:
-                    self.currentIndex -= 1
                     self.savePixMap(self.drawingPixmap)
                     self.setThumbnailPixmap(self.thumbnails[self.currentIndex], self.drawingPixmap)
+                    self.currentIndex -= 1
                     pixmap = QtGui.QPixmap(self.filenames[self.currentIndex])
                     pixmap = pixmap.scaled(
                         self.imageWidth, self.imageHeight - self.heightPadding, QtCore.Qt.KeepAspectRatio)
@@ -154,23 +155,24 @@ class Gallery(QtWidgets.QMainWindow):
         self.wm.accelerometer.register_callback(self.transformPicture)
 
     def buttonPressed(self, changedButtons):
+        #undo redo
         for button in changedButtons:
             if(button[0] == 'B'):
-                if(button[1]):
-                    print("B pressed")
-                else:
-                    print("B released")
+                if not button[1]:
                     if self.painted:
                         self.painted = False
+                        print("len: " + str(len(self.pixmapStack))+ ", index: " + str(self.currentPixmapIndex))
+                        if self.currentPixmapIndex < len(self.pixmapStack)-1:
+                            del self.pixmapStack[-self.currentPixmapIndex+1:]
+                        print("add")
                         self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                         self.currentPixmapIndex += 1
             if(button[0] == 'Minus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex > 0):
+                print("minus")
                 self.currentPixmapIndex -= 1
-                print(self.currentPixmapIndex, self.pixmapStack)
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
             if(button[0] == 'Plus' and button[1] and len(self.pixmapStack) > 0 and self.currentPixmapIndex < (len(self.pixmapStack)-1)):
                 self.currentPixmapIndex += 1
-                print(self.currentPixmapIndex, self.pixmapStack)
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
 
     def initCursor(self):
@@ -184,6 +186,12 @@ class Gallery(QtWidgets.QMainWindow):
         self.arrow.setAlignment(QtCore.Qt.AlignCenter)
         self.arrow.setGeometry(self.thumbnailWidth / 2 - self.arrowWidth / 2, self.arrowY, self.arrowWidth, self.arrowHeight)
         self.arrow.setPixmap(QtGui.QPixmap(("arrow.png")).scaledToHeight(20))
+
+    def resetUndoRedoStack(self):
+        print("resttin")
+        self.pixmapStack = []
+        self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
+        self.currentPixmapIndex = 0
 
     def moveCursor(self, irData):
         if self.wm.buttons["A"]:
@@ -217,6 +225,7 @@ class Gallery(QtWidgets.QMainWindow):
         painter.setPen(pen)
         painter.drawEllipse(x, y, 10, 10)
         painter.end()
+        self.painted = True
         self.image.setPixmap(self.drawingPixmap)
 
     def animationFinished(self, newState, oldState):
@@ -238,8 +247,12 @@ class Gallery(QtWidgets.QMainWindow):
             if rot_angle < 0:
                rot_angle = 360 + rot_angle
             self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(rot_angle), 1))
+            self.drawingPixmap = self.image.pixmap()
+            self.resetUndoRedoStack()
         elif self.wm.buttons['Down']:
             self.zoomPicture(accelData)
+            self.drawingPixmap = self.image.pixmap()
+            self.resetUndoRedoStack()
     
     def zoomPicture(self, accelData):
         x, y, z = accelData[0], accelData[1], accelData[2]
