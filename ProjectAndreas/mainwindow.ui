@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="osc1_tab">
      <attribute name="title">
@@ -976,7 +976,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>25</string>
+     <string>100</string>
     </property>
     <property name="maxLength">
      <number>5</number>
@@ -1076,11 +1076,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="btn_group_axis_osc2"/>
-  <buttongroup name="btn_group_wave_osc2"/>
   <buttongroup name="btn_group_axis_osc1"/>
   <buttongroup name="btn_group_wave_osc3"/>
-  <buttongroup name="btn_group_axis_osc3"/>
+  <buttongroup name="btn_group_axis_osc2"/>
+  <buttongroup name="btn_group_wave_osc2"/>
   <buttongroup name="btn_group_wave_osc1"/>
+  <buttongroup name="btn_group_axis_osc3"/>
  </buttongroups>
 </ui>

@@ -67,7 +67,9 @@ class Synthesizer(QtWidgets.QMainWindow):
                         rate=44100,
                         output=True)
 
-        stream.write(wave)
+        while not self.wm.buttons["A"]:
+            stream.write(wave)
+
         stream.stop_stream()
         stream.close()
 
