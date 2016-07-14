@@ -11,8 +11,8 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 class Oscillator(QObject):
     class UIElement(Enum):
-        X_AXIS, Y_AXIS, Z_AXIS, SINE, SQUARE, SAW, TRI, NOISE, PLOT, DOWNSAMPLE, STRETCH, ENABLED = range(
-            12)
+        (X_AXIS, Y_AXIS, Z_AXIS, SINE, SQUARE, SAW, TRI, NOISE, PLOT, DOWNSAMPLE, STRETCH,
+         ENABLED, VOLUME, STRETCH_VAL, VOLUME_VAL, SAMPLE_VAL, COPY, PASTE, OVERWRITE) = range(19)
 
     class Waveform(Enum):
         SINE, SQUARE, SAW, TRI, NOISE = range(5)
@@ -29,6 +29,7 @@ class Oscillator(QObject):
         self.index = index
         self.plot = None
         self.stretchRate = 0
+        self.volume = 50
         self.synth = synth
         self.dsRate = 0
         self.currentWave = None
@@ -48,25 +49,40 @@ class Oscillator(QObject):
                                self.UIElement.TRI: ui.tri_radio_1, self.UIElement.SQUARE: ui.square_radio_1,
                                self.UIElement.SAW: ui.saw_radio_1, self.UIElement.NOISE: ui.noise_radio_1,
                                self.UIElement.PLOT: ui.osc_plot_1, self.UIElement.DOWNSAMPLE: ui.downsample_1,
-                               self.UIElement.STRETCH: ui.stretch_1, self.UIElement.ENABLED: ui.osc_enabled_1}
+                               self.UIElement.STRETCH: ui.stretch_1, self.UIElement.ENABLED: ui.osc_enabled_1,
+                               self.UIElement.VOLUME: ui.vol_1, self.UIElement.VOLUME_VAL: ui.vol_val_1,
+                               self.UIElement.STRETCH_VAL: ui.stretch_val_1, self.UIElement.COPY: ui.copy_1,
+                               self.UIElement.SAMPLE_VAL: ui.sample_val_1, self.UIElement.PASTE: ui.paste_1,
+                               self.UIElement.OVERWRITE: ui.overwrite_1}
         elif self.index == 1:
             self.uiElements = {self.UIElement.X_AXIS: ui.x_radio_2, self.UIElement.Y_AXIS: ui.y_radio_2,
                                self.UIElement.Z_AXIS: ui.z_radio_2, self.UIElement.SINE: ui.sine_radio_2,
                                self.UIElement.TRI: ui.tri_radio_2, self.UIElement.SQUARE: ui.square_radio_2,
                                self.UIElement.SAW: ui.saw_radio_2, self.UIElement.NOISE: ui.noise_radio_2,
                                self.UIElement.PLOT: ui.osc_plot_2, self.UIElement.DOWNSAMPLE: ui.downsample_2,
-                               self.UIElement.STRETCH: ui.stretch_2, self.UIElement.ENABLED: ui.osc_enabled_2}
+                               self.UIElement.STRETCH: ui.stretch_2, self.UIElement.ENABLED: ui.osc_enabled_2,
+                               self.UIElement.VOLUME: ui.vol_2, self.UIElement.VOLUME_VAL: ui.vol_val_2,
+                               self.UIElement.STRETCH_VAL: ui.stretch_val_2, self.UIElement.COPY: ui.copy_2,
+                               self.UIElement.SAMPLE_VAL: ui.sample_val_2, self.UIElement.PASTE: ui.paste_2,
+                               self.UIElement.OVERWRITE: ui.overwrite_2}
         elif self.index == 2:
             self.uiElements = {self.UIElement.X_AXIS: ui.x_radio_3, self.UIElement.Y_AXIS: ui.y_radio_3,
                                self.UIElement.Z_AXIS: ui.z_radio_3, self.UIElement.SINE: ui.sine_radio_3,
                                self.UIElement.TRI: ui.tri_radio_3, self.UIElement.SQUARE: ui.square_radio_3,
                                self.UIElement.SAW: ui.saw_radio_3, self.UIElement.NOISE: ui.noise_radio_3,
                                self.UIElement.PLOT: ui.osc_plot_3, self.UIElement.DOWNSAMPLE: ui.downsample_3,
-                               self.UIElement.STRETCH: ui.stretch_3, self.UIElement.ENABLED: ui.osc_enabled_3}
+                               self.UIElement.STRETCH: ui.stretch_3, self.UIElement.ENABLED: ui.osc_enabled_3,
+                               self.UIElement.VOLUME: ui.vol_3, self.UIElement.VOLUME_VAL: ui.vol_val_3,
+                               self.UIElement.STRETCH_VAL: ui.stretch_val_3, self.UIElement.COPY: ui.copy_3,
+                               self.UIElement.SAMPLE_VAL: ui.sample_val_3, self.UIElement.PASTE: ui.paste_3,
+                               self.UIElement.OVERWRITE: ui.overwrite_3}
 
         self.setDefaultValues()
         self.setPlot(np.zeros(100))
         self.setupButtonSignals()
+
+    def shouldOverWrite(self):
+        return self.uiElements[self.UIElement.OVERWRITE].isChecked()
 
     def setupButtonSignals(self):
         # set accelerator axis
@@ -94,16 +110,44 @@ class Oscillator(QObject):
             int].connect(self.downsample)
         self.uiElements[self.UIElement.STRETCH].valueChanged[
             int].connect(self.stretch)
+        self.uiElements[self.UIElement.VOLUME].valueChanged[
+            int].connect(self.changeVolume)
+
+        # copy/paste
+        self.uiElements[self.UIElement.COPY].clicked.connect(self.copyOsc)
+        self.uiElements[self.UIElement.PASTE].clicked.connect(self.pasteOsc)
 
         self.ui.smoothing.clicked.connect(self.createWaveform)
 
+    def copyOsc(self):
+        self.synth.copiedOsc = self
+
+    def pasteOsc(self):
+        if self.synth.copiedOsc is None:
+            return
+        osc = self.synth.copiedOsc
+        self.downsample(osc.dsRate)
+        self.stretch(osc.stretchRate)
+
     def downsample(self, rate):
         self.dsRate = rate
+        sliderPos = self.uiElements[self.UIElement.DOWNSAMPLE].sliderPosition
+        if sliderPos != rate:
+            self.uiElements[self.UIElement.DOWNSAMPLE].setSliderPosition(rate)
+        self.uiElements[self.UIElement.SAMPLE_VAL].setText(str(rate))
         self.createWaveform()
 
     def stretch(self, rate):
         self.stretchRate = rate
+        sliderPos = self.uiElements[self.UIElement.STRETCH].sliderPosition
+        if sliderPos != rate:
+            self.uiElements[self.UIElement.STRETCH].setSliderPosition(rate)
+        self.uiElements[self.UIElement.STRETCH_VAL].setText(str(rate))
         self.createWaveform()
+
+    def changeVolume(self, rate):
+        self.volume = rate
+        self.uiElements[self.UIElement.VOLUME_VAL].setText(str(rate))
 
     def setDefaultValues(self):
         if self.uiElements[self.UIElement.X_AXIS].isChecked():
@@ -138,6 +182,9 @@ class Oscillator(QObject):
             data = np.split(np.append(data, [0]), 2)[0]
         peakFrequency = np.where(data == np.amax(data))[0]
         return peakFrequency
+
+    def getCurrentWave(self):
+        return (self.volume / 100) * self.currentWave
 
     def createWaveform(self):
         if len(self.rawData) == 0:
@@ -190,10 +237,12 @@ class Oscillator(QObject):
         self.updatePlot.emit(wave)
 
     def downsampleWave(self, wave):
-        if self.dsRate > 0:
-            return signal.decimate(wave, self.dsRate)
-        else:
+        if self.dsRate == 0:
             return wave
+        if self.dsRate > 0:
+            return signal.decimate(wave, self.dsRate + 1)
+        if self.dsRate < 0:
+            return wave.repeat(abs(self.dsRate) + 1)
 
     def stretchWave(self, wave):
         originalWave = wave

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>614</height>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -215,13 +215,13 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>280</y>
+         <y>290</y>
          <width>291</width>
          <height>18</height>
         </rect>
        </property>
        <property name="minimum">
-        <number>0</number>
+        <number>-5</number>
        </property>
        <property name="maximum">
         <number>5</number>
@@ -238,12 +238,18 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
+       <property name="invertedAppearance">
+        <bool>false</bool>
+       </property>
+       <property name="invertedControls">
+        <bool>false</bool>
+       </property>
       </widget>
       <widget class="QSlider" name="stretch_1">
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>330</y>
+         <y>340</y>
          <width>291</width>
          <height>18</height>
         </rect>
@@ -259,26 +265,123 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>260</y>
-         <width>111</width>
+         <y>270</y>
+         <width>121</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Downsampling</string>
+        <string>Up-/Downsampling</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_2">
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>310</y>
+         <y>320</y>
          <width>111</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
         <string>Strech</string>
+       </property>
+      </widget>
+      <widget class="QDial" name="vol_1">
+       <property name="geometry">
+        <rect>
+         <x>670</x>
+         <y>20</y>
+         <width>50</width>
+         <height>64</height>
+        </rect>
+       </property>
+       <property name="value">
+        <number>50</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sample_val_1">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>280</y>
+         <width>59</width>
+         <height>14</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="stretch_val_1">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>330</y>
+         <width>59</width>
+         <height>14</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="paste_1">
+       <property name="geometry">
+        <rect>
+         <x>660</x>
+         <y>340</y>
+         <width>81</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Paste</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="copy_1">
+       <property name="geometry">
+        <rect>
+         <x>570</x>
+         <y>340</y>
+         <width>81</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Copy</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="vol_val_1">
+       <property name="geometry">
+        <rect>
+         <x>670</x>
+         <y>10</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>50</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="overwrite_1">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>10</y>
+         <width>85</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Overwrite</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
@@ -501,7 +604,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>330</y>
+         <y>340</y>
          <width>291</width>
          <height>18</height>
         </rect>
@@ -517,13 +620,13 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>280</y>
+         <y>290</y>
          <width>291</width>
          <height>18</height>
         </rect>
        </property>
        <property name="minimum">
-        <number>0</number>
+        <number>-5</number>
        </property>
        <property name="maximum">
         <number>5</number>
@@ -542,26 +645,123 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>260</y>
-         <width>111</width>
+         <y>270</y>
+         <width>121</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Downsampling</string>
+        <string>Up-/Downsampling</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_3">
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>310</y>
+         <y>320</y>
          <width>111</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
         <string>Strech</string>
+       </property>
+      </widget>
+      <widget class="QDial" name="vol_2">
+       <property name="geometry">
+        <rect>
+         <x>670</x>
+         <y>20</y>
+         <width>50</width>
+         <height>64</height>
+        </rect>
+       </property>
+       <property name="value">
+        <number>50</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sample_val_2">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>280</y>
+         <width>59</width>
+         <height>14</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="stretch_val_2">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>330</y>
+         <width>59</width>
+         <height>14</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="paste_2">
+       <property name="geometry">
+        <rect>
+         <x>660</x>
+         <y>340</y>
+         <width>81</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Paste</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="copy_2">
+       <property name="geometry">
+        <rect>
+         <x>570</x>
+         <y>340</y>
+         <width>81</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Copy</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="vol_val_2">
+       <property name="geometry">
+        <rect>
+         <x>670</x>
+         <y>10</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>50</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="overwrite_2">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>10</y>
+         <width>85</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Overwrite</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
@@ -784,13 +984,13 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>280</y>
+         <y>290</y>
          <width>291</width>
          <height>18</height>
         </rect>
        </property>
        <property name="minimum">
-        <number>0</number>
+        <number>-5</number>
        </property>
        <property name="maximum">
         <number>5</number>
@@ -809,7 +1009,7 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>310</y>
+         <y>320</y>
          <width>111</width>
          <height>16</height>
         </rect>
@@ -822,13 +1022,13 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>260</y>
-         <width>111</width>
+         <y>270</y>
+         <width>121</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Downsampling</string>
+        <string>Up-/Downsampling</string>
        </property>
       </widget>
       <widget class="QSlider" name="stretch_3">
@@ -838,7 +1038,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>330</y>
+         <y>340</y>
          <width>291</width>
          <height>18</height>
         </rect>
@@ -848,6 +1048,103 @@
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QDial" name="vol_3">
+       <property name="geometry">
+        <rect>
+         <x>670</x>
+         <y>20</y>
+         <width>50</width>
+         <height>64</height>
+        </rect>
+       </property>
+       <property name="value">
+        <number>50</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sample_val_3">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>280</y>
+         <width>59</width>
+         <height>14</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="stretch_val_3">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>330</y>
+         <width>59</width>
+         <height>14</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="paste_3">
+       <property name="geometry">
+        <rect>
+         <x>660</x>
+         <y>340</y>
+         <width>81</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Paste</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="copy_3">
+       <property name="geometry">
+        <rect>
+         <x>570</x>
+         <y>340</y>
+         <width>81</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Copy</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="vol_val_3">
+       <property name="geometry">
+        <rect>
+         <x>670</x>
+         <y>10</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>50</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="overwrite_3">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>10</y>
+         <width>85</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Overwrite</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
@@ -871,7 +1168,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>21</y>
+        <y>20</y>
         <width>771</width>
         <height>31</height>
        </rect>
@@ -915,7 +1212,7 @@
     <property name="geometry">
      <rect>
       <x>470</x>
-      <y>540</y>
+      <y>550</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -944,7 +1241,7 @@
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>540</y>
+      <y>550</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -1002,13 +1299,29 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>540</y>
+      <y>550</y>
       <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>Preview</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>530</y>
+      <width>291</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Press A on WiiMote to stop playback.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>
@@ -1018,7 +1331,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>
@@ -1078,9 +1391,9 @@
  <buttongroups>
   <buttongroup name="btn_group_axis_osc1"/>
   <buttongroup name="btn_group_wave_osc3"/>
-  <buttongroup name="btn_group_axis_osc2"/>
-  <buttongroup name="btn_group_wave_osc2"/>
   <buttongroup name="btn_group_wave_osc1"/>
+  <buttongroup name="btn_group_wave_osc2"/>
+  <buttongroup name="btn_group_axis_osc2"/>
   <buttongroup name="btn_group_axis_osc3"/>
  </buttongroups>
 </ui>

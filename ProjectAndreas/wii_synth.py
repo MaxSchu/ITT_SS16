@@ -18,6 +18,7 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.wm = None
         self.oscillators = []
         self.sampleRate = 0
+        self.copiedOsc = None
         self.setupUI()
         self.initOscillators()
 
@@ -84,15 +85,15 @@ class Synthesizer(QtWidgets.QMainWindow):
         waves = []
 
         if self.oscillators[0].isEnabled():
-            waves.append(self.oscillators[0].currentWave)
+            waves.append(self.oscillators[0].getCurrentWave())
         else:
             waves.append([0])
         if self.oscillators[1].isEnabled():
-            waves.append(self.oscillators[1].currentWave)
+            waves.append(self.oscillators[1].getCurrentWave())
         else:
             waves.append([0])
         if self.oscillators[2].isEnabled():
-            waves.append(self.oscillators[2].currentWave)
+            waves.append(self.oscillators[2].getCurrentWave())
         else:
             waves.append([0])
 
@@ -137,7 +138,8 @@ class RecordingPopup(QtWidgets.QMainWindow):
 
     def saveData(self, data):
         for oscillator in self.parent.oscillators:
-            oscillator.setData(data[oscillator.getAxis()])
+            if oscillator.shouldOverWrite():
+                oscillator.setData(data[oscillator.getAxis()])
 
         self.close()
 
