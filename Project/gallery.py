@@ -15,7 +15,7 @@ from activity_recognition import GestureRecognizer
 
 class Gallery(QtWidgets.QMainWindow):
 
-    defaultWiiMac = "B8:AE:6E:18:3A:ED"
+    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
     startPos = None
     signal = QtCore.pyqtSignal(int, bool)
     pixmapStack = []
