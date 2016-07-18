@@ -37,6 +37,9 @@ class Gallery(QtWidgets.QMainWindow):
         self.imageWidth = width / 10 * 9
         self.arrowWidth = 10
         self.arrowHeight = 20
+        self.count = 0
+        self.list = []
+        self.curAngle = 0
         self.arrowY = self.imageHeight - ((self.heightPadding - self.arrowHeight)/2)
         self.currentIndex = 0
         self.imageOff = QtWidgets.QLabel(self)
@@ -182,9 +185,10 @@ class Gallery(QtWidgets.QMainWindow):
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
             if(button[0] == 'Two'):
                 if(button[1]):
-                    self.wm.accelerometer.register_callback(self.transformPicture)
+                    self.wm.accelerometer.register_callback(self.collectData)
+                    #self.collectData()
                 else:
-                    self.wm.accelerometer.unregister_callback(self.transformPicture)
+                    self.wm.accelerometer.unregister_callback(self.collectData)
             if(button[0] == 'Down'):
                 if(button[1]):
                     self.wm.accelerometer.register_callback(self.zoomPicture)
@@ -252,6 +256,33 @@ class Gallery(QtWidgets.QMainWindow):
                 self.pixmapStack.append(QtGui.QPixmap(self.image.pixmap()))
                 self.currentPixmapIndex = 0
 
+    def collectData(self, accelData):
+        if self.count < 32:
+            self.count += 1
+            x, y, z = accelData[0], accelData[1], accelData[2]
+            rot_angle = int(-(scipy.degrees(scipy.arctan2(z-512, x-512)) - 90))
+            self.list.append(rot_angle)
+        else:
+            self.transformPicture(accelData)
+            self.count = 0
+            self.list = []
+
+    def getDirection(self):
+        left = 0
+        right = 0
+        print(self.list)
+        left = self.list[0]
+        right = self.list[-1]
+        # counter-clockwise
+        print('left: '+str(left)+' right: '+str(right))
+        if left > right:
+            return -1
+        # clockwise
+        elif right > left: 
+            return 1
+        else:
+            return 0
+            
     def transformPicture(self, accelData):
         # rotate
         if True:
@@ -259,11 +290,14 @@ class Gallery(QtWidgets.QMainWindow):
             offset = 512    
             centeredZ = z - offset
             centeredX = x - offset
-            rot_angle = int(-(scipy.degrees(scipy.arctan2(centeredZ, centeredX)) - 90))
-            if rot_angle < 0:
-               rot_angle = 360 + rot_angle
-            angle = self.getSector(rot_angle)
-            self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(angle), QtCore.Qt.SmoothTransformation))
+            angle = self.curAngle
+            print('sector: '+str(angle))
+            direction = self.getDirection()
+            for i in range(45):
+                angle += (direction*2)
+                #print('ang: '+str(angle))
+                self.image.setPixmap(self.pixmap.transformed(QtGui.QTransform().rotate(angle), QtCore.Qt.SmoothTransformation))
+            self.curAngle = angle
             self.drawingPixmap = self.image.pixmap()
             self.resetUndoRedoStack()
         elif self.wm.buttons['Down']:
@@ -271,8 +305,9 @@ class Gallery(QtWidgets.QMainWindow):
             self.drawingPixmap = self.image.pixmap()
             self.resetUndoRedoStack()
  
+    ###### not used anymore!!! #####
     def getSector(self, angle):
-        base = 10
+        base = 90
         return int(base * round(float(angle)/base))
     
     def zoomPicture(self, accelData):
