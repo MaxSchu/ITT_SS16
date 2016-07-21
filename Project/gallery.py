@@ -31,7 +31,6 @@ class Gallery(QtWidgets.QMainWindow):
         self.initUI(width, height)
         self.initPen()
         self.drawingPixmap = None
-        self.list = []
         self.count = 0
         self.curAngle = 0
         self.currentIndex = 0
@@ -161,7 +160,7 @@ class Gallery(QtWidgets.QMainWindow):
                 else:
                     print("Minimum index reached")
             elif(int(direction) == 2):
-                self.transformPicture(1) 
+                self.transformPicture(1)
             elif(int(direction) == -2):
                 self.transformPicture(-1)
 
@@ -221,13 +220,6 @@ class Gallery(QtWidgets.QMainWindow):
                 # Plus button released and undo stack is not empty -> redo
                 self.currentPixmapIndex += 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
-            '''if(button[0] == 'Two'):
-                if(button[1]):
-                    # 2 button pressed
-                    self.wm.accelerometer.register_callback(self.collectData)
-                else:
-                    # 2 button released
-                    self.wm.accelerometer.unregister_callback(self.collectData)'''
             if(button[0] == 'Down'):
                 if(button[1]):
                     # DPAD down pressed
@@ -312,34 +304,23 @@ class Gallery(QtWidgets.QMainWindow):
             self.transformPicture(accelData)
             self.count = 0
             self.list = []
-            
+
     def transformPicture(self, direction):
         # rotate
-        if True:
-            angle = self.curAngle
-            for i in range(45):
-                angle += (direction * 2)
-                self.image.setPixmap(self.pixmap.transformed(
-                    QtGui.QTransform().rotate(angle), QtCore.Qt.SmoothTransformation))
-            self.curAngle = angle
-            self.drawingPixmap = self.image.pixmap()
-            self.resetUndoRedoStack()
-        elif self.wm.buttons['Down']:
-            self.zoomPicture(accelData)
-            self.drawingPixmap = self.image.pixmap()
-            self.resetUndoRedoStack()
-
-    # not used anymore!!!
-    def getSector(self, angle):
-        base = 90
-        return int(base * round(float(angle) / base))
+        angle = self.curAngle
+        for i in range(45):
+            angle += (direction * 2)
+            self.image.setPixmap(self.pixmap.transformed(
+                QtGui.QTransform().rotate(angle), QtCore.Qt.SmoothTransformation))
+        self.curAngle = angle
+        self.drawingPixmap = self.image.pixmap()
+        self.resetUndoRedoStack()
 
     def zoomPicture(self, accelData):
         y, z = accelData[1], accelData[2]
         offset = 512
         centeredZ = z - offset
         centeredY = y - offset
-
         tilt_angle = scipy.degrees(scipy.arctan2(centeredZ, centeredY)) - 90
         if tilt_angle <= -90:
             tilt_angle = 360 + tilt_angle
@@ -350,10 +331,6 @@ class Gallery(QtWidgets.QMainWindow):
             QtGui.QTransform().scale(scale_val, scale_val), QtCore.Qt.SmoothTransformation))
         self.drawingPixmap = self.image.pixmap()
         self.resetUndoRedoStack()
-
-    def get_sector(self, rot_angle):
-        base = 45
-        return int(base * round(float(rot_angle) / base))
 
     def setThumbnailPixmap(self, thumb, pixmap):
         if pixmap is not None:
