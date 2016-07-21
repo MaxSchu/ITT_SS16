@@ -19,7 +19,7 @@ class GestureRecognizer():
     """
 
     recording = False
-    
+
     def __init__(self, callback, wm):
         self.callback = callback
         self.wm = wm
@@ -102,7 +102,8 @@ class GestureRecognizer():
 
     def parseDataset(self, dataSet):
         x = []
-        #Use the difference from default sensor value
+        # Use the difference from default sensor value
         for values in dataSet:
             x.append(values[0]-512)
+            x.append(values[0] - 512)
         return x
