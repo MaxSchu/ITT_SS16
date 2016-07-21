@@ -4,6 +4,7 @@
 
 import wiimote
 import numpy as np
+import scipy as sp
 from gesture import WiiGesture
 
 
@@ -23,6 +24,7 @@ class GestureRecognizer():
         self.callback = callback
         self.wm = wm
         self.wm.buttons.register_callback(self.wiimoteButtonPressed)
+        self.rotList = []
 
     def wiimoteButtonPressed(self, btns):
         if len(btns) == 0:
@@ -35,6 +37,27 @@ class GestureRecognizer():
                 elif btn[0] == "One" and self.recording:
                     self.stopRecording()
                     self.recording = False
+                elif btn[0] == "Two" and not self.recording:
+                    print('pressed two')
+                    self.startRecording()
+                    self.recording = True
+                elif btn[0] == "Two" and self.recording:
+                    self.stopRecordingRot()
+                    self.recording = False
+
+    def stopRecordingRot(self):
+        self.wm.accelerometer.unregister_callback(self.recordAccel)
+        for value in self.currentGestureData:
+            x, y, z = value[0], value[1], value[2]
+            rot_angle = int(-(sp.degrees(sp.arctan2(z-512, x-512)) - 90))
+            self.rotList.append(rot_angle)
+        print(self.rotList)
+        self.currentGestureData = []
+        direction = self.getDirection()
+        if direction == 1:
+            self.callback(2)
+        else:
+            self.callback(-2)
 
     def stopRecording(self):
         self.wm.accelerometer.unregister_callback(self.recordAccel)
@@ -54,6 +77,20 @@ class GestureRecognizer():
     def startRecording(self):
         self.currentGestureData = []
         self.wm.accelerometer.register_callback(self.recordAccel)
+
+    def getDirection(self):
+        left = 0
+        right = 0
+        left = self.rotList[0]
+        right = self.rotList[-1]
+        # counter-clockwise
+        if left > right:
+            return -1
+        # clockwise
+        elif right > left: 
+            return 1
+        else:
+            return 0
 
     def recordAccel(self, values):
         self.currentGestureData.append(values)

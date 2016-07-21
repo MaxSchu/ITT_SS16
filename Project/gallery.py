@@ -21,7 +21,7 @@ class Gallery(QtWidgets.QMainWindow):
     the GestureRecognizer in activity_recognition.py
     """
 
-    defaultWiiMac = "B8:AE:6E:18:3A:ED"
+    defaultWiiMac = "B8:AE:6E:1B:AD:A0"
     startPos = None
     signal = QtCore.pyqtSignal(int, bool)
     pixmapStack = []
@@ -166,6 +166,10 @@ class Gallery(QtWidgets.QMainWindow):
                     self.signal.emit(self.width, False)
                 else:
                     print("Minimum index reached")
+            elif(int(direction) == 2):
+                self.transformPicture(1) 
+            elif(int(direction) == -2):
+                self.transformPicture(-1)
 
     def animate(self, targetPos, directionRight):
         self.animationsRunning = 3
@@ -216,14 +220,14 @@ class Gallery(QtWidgets.QMainWindow):
                 # Plus button released and undo stack is not empty -> redo
                 self.currentPixmapIndex += 1
                 self.image.setPixmap(self.pixmapStack[self.currentPixmapIndex])
-            if(button[0] == 'Two'):
+            '''if(button[0] == 'Two'):
                 if(button[1]):
                     # 2 button pressed
                     self.wm.accelerometer.register_callback(self.collectData)
                     #self.collectData()
                 else:
                     # 2 button released
-                    self.wm.accelerometer.unregister_callback(self.collectData)
+                    self.wm.accelerometer.unregister_callback(self.collectData)'''
             if(button[0] == 'Down'):
                 if(button[1]):
                     # DPAD down pressed
@@ -305,32 +309,14 @@ class Gallery(QtWidgets.QMainWindow):
             self.count = 0
             self.list = []
 
-    def getDirection(self):
-        left = 0
-        right = 0
-        print(self.list)
-        left = self.list[0]
-        right = self.list[-1]
-        # counter-clockwise
-        print('left: '+str(left)+' right: '+str(right))
-        if left > right:
-            return -1
-        # clockwise
-        elif right > left: 
-            return 1
-        else:
-            return 0
+    
             
-    def transformPicture(self, accelData):
+    def transformPicture(self, direction):
         # rotate
         if True:
-            x, y, z = accelData[0], accelData[1], accelData[2]
-            offset = 512    
-            centeredZ = z - offset
-            centeredX = x - offset
             angle = self.curAngle
-            print('sector: '+str(angle))
-            direction = self.getDirection()
+            #print('sector: '+str(angle))
+            #direction = self.getDirection()
             for i in range(45):
                 angle += (direction*2)
                 #print('ang: '+str(angle))
