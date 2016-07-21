@@ -184,6 +184,8 @@ class Oscillator(QObject):
         return peakFrequency
 
     def getCurrentWave(self):
+        if len(self.rawData) == 0:
+            return [0]
         return (self.volume / 100) * self.currentWave
 
     def createWaveform(self):

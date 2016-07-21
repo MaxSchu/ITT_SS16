@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>WiiSynth</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="osc_tabs">
@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="osc1_tab">
      <attribute name="title">
@@ -284,7 +284,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Strech</string>
+        <string>Stretch</string>
        </property>
       </widget>
       <widget class="QDial" name="vol_1">
@@ -664,7 +664,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Strech</string>
+        <string>Stretch</string>
        </property>
       </widget>
       <widget class="QDial" name="vol_2">
@@ -1015,7 +1015,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Strech</string>
+        <string>Stretch</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_6">
@@ -1389,11 +1389,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="btn_group_axis_osc1"/>
-  <buttongroup name="btn_group_wave_osc3"/>
-  <buttongroup name="btn_group_wave_osc1"/>
-  <buttongroup name="btn_group_wave_osc2"/>
   <buttongroup name="btn_group_axis_osc2"/>
+  <buttongroup name="btn_group_wave_osc1"/>
+  <buttongroup name="btn_group_wave_osc3"/>
   <buttongroup name="btn_group_axis_osc3"/>
+  <buttongroup name="btn_group_wave_osc2"/>
+  <buttongroup name="btn_group_axis_osc1"/>
  </buttongroups>
 </ui>
