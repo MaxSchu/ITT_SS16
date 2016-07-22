@@ -23,6 +23,7 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.initOscillators()
 
     def setupUI(self):
+        """Setup all UI elements and connect signals"""
         self.ui.bt_connect.clicked.connect(self.connectToWiimote)
         self.ui.record.clicked.connect(self.openRecordingPopup)
         self.ui.play.clicked.connect(self.playSound)
@@ -34,6 +35,7 @@ class Synthesizer(QtWidgets.QMainWindow):
         try:
             self.wm = wiimote.connect(self.ui.bt_address.text())
         except(bluetooth.BluetoothError):
+            # Show info when connection fails
             self.ui.connection_label.setText("Connection failed")
             self.ui.connection_label.setStyleSheet("color: red")
             self.enableUI(False)
@@ -44,6 +46,7 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.enableUI(True)
 
     def enableUI(self, enabled):
+        """Enabled or disabled UI elements in the main window"""
         self.ui.osc_tabs.setEnabled(enabled)
         self.ui.record.setEnabled(enabled)
         self.ui.play.setEnabled(enabled)
@@ -51,6 +54,7 @@ class Synthesizer(QtWidgets.QMainWindow):
         self.ui.stretch_3.setEnabled(enabled)
 
     def openRecordingPopup(self):
+        """Open the popup which enables recording"""
         self.ui.setEnabled(False)
         self.sampleRate = int(self.ui.sample_rate.text())
         popup = RecordingPopup(self, self.sampleRate)
@@ -61,6 +65,7 @@ class Synthesizer(QtWidgets.QMainWindow):
             self.oscillators.append(osc.Oscillator(i, self))
 
     def playSound(self):
+        """Play the current soundwave"""
         p = pyaudio.PyAudio()
         wave = self.createWaveform()
         stream = p.open(format=pyaudio.paFloat32,
@@ -68,6 +73,7 @@ class Synthesizer(QtWidgets.QMainWindow):
                         rate=44100,
                         output=True)
 
+        # keep playing the sound until A button on wiiMote is pressed
         while not self.wm.buttons["A"]:
             stream.write(wave)
 
@@ -77,13 +83,16 @@ class Synthesizer(QtWidgets.QMainWindow):
         p.terminate()
 
     def showPreview(self):
+        """Draw current wave"""
         wave = self.createWaveform()
         plt.plot(wave)
         plt.show()
 
     def createWaveform(self):
+        """Create the final waveform out of all oscillator data"""
         waves = []
 
+        # check if oscillators are enabled
         if self.oscillators[0].isEnabled():
             waves.append(self.oscillators[0].getCurrentWave())
         else:
@@ -95,8 +104,11 @@ class Synthesizer(QtWidgets.QMainWindow):
         if self.oscillators[2].isEnabled():
             waves.append(self.oscillators[2].getCurrentWave())
         else:
+            # avoid nullpointer if all oscillators are disabled
             waves.append([0])
 
+        # get longest signal and fill all other signals with zeros to match
+        # its length
         maxLength = max([len(waves[0]), len(waves[1]), len(waves[2])])
         if len(waves[0]) < maxLength:
             waves[0] = np.append(waves[0], np.zeros(maxLength - len(waves[0])))
@@ -105,8 +117,8 @@ class Synthesizer(QtWidgets.QMainWindow):
         if len(waves[2]) < maxLength:
             waves[2] = np.append(waves[2], np.zeros(maxLength - len(waves[2])))
 
+        # add up all enabled oscillator waves
         addedWave = np.zeros(maxLength)
-
         if self.oscillators[0].isEnabled():
             addedWave = addedWave + waves[0]
         if self.oscillators[1].isEnabled():
@@ -137,10 +149,11 @@ class RecordingPopup(QtWidgets.QMainWindow):
         self.dataSets = []
 
     def saveData(self, data):
+        """Set data for each oscillator according to their selected axis"""
         for oscillator in self.parent.oscillators:
             if oscillator.shouldOverWrite():
                 oscillator.setData(data[oscillator.getAxis()])
-
+        # close the popup window
         self.close()
 
     def recordGestures(self):
@@ -153,20 +166,24 @@ class RecordingPopup(QtWidgets.QMainWindow):
 
         while self.isVisible():
             if self.wm.buttons["A"]:
+                # check if recording is already running
                 if not isRecording:
                     self.ui.status_label.setText("Recording...")
                     isRecording = True
                 else:
+                    # center the accelerometer values to zero
                     centeredX = self.wm.accelerometer[0] - 512
                     centeredY = self.wm.accelerometer[1] - 512
                     centeredZ = self.wm.accelerometer[2] - 512
                     centered = [centeredX, centeredY, centeredZ]
+                    # normalize vector of all accelerometer axis
                     normalized = normalize(centered).ravel()
                     currentRecordX.append(normalized[0])
                     currentRecordZ.append(normalized[1])
                     currentRecordY.append(normalized[2])
                 time.sleep(self.delay)
             elif isRecording:
+                # save data after recording
                 self.saveData([currentRecordX, currentRecordY, currentRecordZ])
 
 
