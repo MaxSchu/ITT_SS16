@@ -16,6 +16,7 @@ class WiiGesture():
         self.frequencies = []
 
     def toString(self):
+        # for Logging purposes
         string = self.name + "\n"
         for dataSet in self.trainingsData:
             for xyz in dataSet:

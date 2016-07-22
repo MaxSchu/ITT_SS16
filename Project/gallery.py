@@ -29,7 +29,7 @@ class Gallery(QtWidgets.QMainWindow):
         super(self.__class__, self).__init__()
 
         self.initUI(width, height)
-        self.initPen()
+        self.initPen("red")
         self.drawingPixmap = None
         self.count = 0
         self.curAngle = 0
@@ -281,8 +281,9 @@ class Gallery(QtWidgets.QMainWindow):
         self.painted = True
         self.image.setPixmap(self.drawingPixmap)
 
-    def initPen(self):
-        self.pen = QtGui.QPen(QtGui.QColor("red"))
+    def initPen(self, color):
+        # pen width and color for the painting
+        self.pen = QtGui.QPen(QtGui.QColor(color))
         self.pen.setWidth(1)
 
     def animationFinished(self, newState, oldState):
